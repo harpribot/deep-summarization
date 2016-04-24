@@ -11,7 +11,7 @@ __pycache__/
 
 # Raw and extracted files
 raw_data/foods.txt
-extracted_data/review_summary.csv
+
 
 
 # Distribution / packaging
