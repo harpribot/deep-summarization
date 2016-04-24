@@ -9,8 +9,8 @@ class Mapper:
         self.revmap = {}
         self.revmap[0] = ""
         self.counter = 1
-        self.review_max_words = 300
-        self.summary_max_words = 300
+        self.review_max_words = 200
+        self.summary_max_words = 200
 
     def generate_vocabulary(self, review_summary_file):
         self.rev_sum_pair = pd.read_csv(review_summary_file,header=0).values

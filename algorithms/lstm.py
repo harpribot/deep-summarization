@@ -37,7 +37,7 @@ class NeuralNet:
         # parameters
         self.seq_length = self.mapper.get_seq_length()
         self.vocab_size = self.mapper.get_vocabulary_size()
-        self.batch_size = 50
+        self.batch_size = 10
         self.memory_dim = 10
         self.learning_rate = 0.05
         self.momentum = 0.9
@@ -45,7 +45,11 @@ class NeuralNet:
     def begin_session(self):
         # start the tensorflow session
         ops.reset_default_graph()
-        self.sess = tf.InteractiveSession()
+	# assign efficient allocator
+	config = tf.ConfigProto()
+	config.gpu_options.allocator_type = 'BFC'
+	# initialize interactive session
+        self.sess = tf.InteractiveSession(config=config)
 
 
     def form_model_graph(self):
@@ -113,11 +117,11 @@ class NeuralNet:
 
             ###### check results on 2 tasks - Visual Validation
             print 'Train Data Validation\n'
-            self.__visual_validate(self.X_trn[100,:],self.Y_trn[100,:])
+            self.__visual_validate(self.X_trn[301,:],self.Y_trn[301,:])
             print
             print
             print 'Test Data Validation\n'
-            self.__visual_validate(self.X_tst[100,:],self.Y_tst[100,:])
+            self.__visual_validate(self.X_tst[156,:],self.Y_tst[156,:])
             print
             print
 
@@ -196,3 +200,6 @@ class NeuralNet:
         df['true_summary'] = np.array(true_summary)
         df['generated_summary'] = np.array(generated_summary)
         df.to_csv(outfile, index=False)
+
+    def close_session(self):
+	self.sess.close()
