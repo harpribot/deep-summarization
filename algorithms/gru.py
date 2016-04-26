@@ -5,11 +5,10 @@ from tensorflow.models.rnn import seq2seq, rnn_cell
 import numpy as np
 from data2tensor import Mapper
 from sklearn.cross_validation import train_test_split
-import tempfile
 import pandas as pd
 
 class NeuralNet:
-    def __init__(self,review_summary_file, attention = False):
+    def __init__(self,review_summary_file,attention=False):
         # Set attention flag
         self.attention = attention
         # Get the input labels and output review
@@ -21,11 +20,6 @@ class NeuralNet:
 
         # Load all the parameters
         self.__load_model_params()
-
-    def set_parameters(self, batch_size, memory_dim, learning_rate):
-        self.batch_size = batch_size
-        self.memory_dim = memory_dim
-        self.learning_rate = learning_rate
 
 
     def __load_data(self):
@@ -89,7 +83,7 @@ class NeuralNet:
         self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
-        self.cell = rnn_cell.LSTMCell(self.memory_dim)
+        self.cell = rnn_cell.GRUCell(self.memory_dim)
 
         # embedding model
         if not self.attention:
@@ -100,7 +94,6 @@ class NeuralNet:
             self.dec_outputs, self.dec_memory = seq2seq.embedding_attention_seq2seq(\
                             self.enc_inp, self.dec_inp, self.cell, \
                             self.vocab_size, self.vocab_size, self.seq_length)
-
 
     def __load_optimizer(self):
         # loss function
