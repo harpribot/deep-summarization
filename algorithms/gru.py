@@ -21,6 +21,10 @@ class NeuralNet:
         # Load all the parameters
         self.__load_model_params()
 
+    def set_parameters(self,batch_size, memory_dim, learning_rate):
+	self.batch_size = batch_size
+	self.memory_dim = memory_dim
+	self.learning_rate = learning_rate
 
     def __load_data(self):
         self.mapper = Mapper()
@@ -38,9 +42,6 @@ class NeuralNet:
         # parameters
         self.seq_length = self.mapper.get_seq_length()
         self.vocab_size = self.mapper.get_vocabulary_size()
-        self.batch_size = 10
-        self.memory_dim = 10
-        self.learning_rate = 0.05
         self.momentum = 0.9
 
     def begin_session(self):
