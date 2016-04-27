@@ -5,9 +5,9 @@ from nltk.tokenize import wordpunct_tokenize
 class Mapper:
     def __init__(self):
         self.map = {}
-        self.map[""] = 0
+        self.map["GO"] = 0
         self.revmap = {}
-        self.revmap[0] = ""
+        self.revmap[0] = "GO"
         self.counter = 1
         self.review_max_words = 200
         self.summary_max_words = 200
@@ -27,6 +27,10 @@ class Mapper:
             if(len(sum_lst) > self.summary_max_words):
                 self.summary_max_words = len(sum_lst)
             '''
+
+        # Now store the "" empty string as the last word of the voacabulary
+        self.map[""] = len(self.map)
+        self.revmap[len(self.map)] = ""
 
     def __add_list_to_dict(self,word_lst):
         for word in word_lst:

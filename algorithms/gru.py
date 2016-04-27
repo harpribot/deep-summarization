@@ -87,7 +87,7 @@ class NeuralNet:
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("train_test", reuse=True):
-            self.cell = rnn_cell.LSTMCell(self.memory_dim)
+            self.cell = rnn_cell.GRUCell(self.memory_dim)
 
         # embedding model
         if not self.attention:
