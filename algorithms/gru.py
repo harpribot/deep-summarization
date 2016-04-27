@@ -88,13 +88,25 @@ class NeuralNet:
 
         # embedding model
         if not self.attention:
-            self.dec_outputs, self.dec_memory = seq2seq.embedding_rnn_seq2seq(\
-                            self.enc_inp, self.dec_inp, self.cell, \
-                            self.vocab_size, self.vocab_size, self.seq_length)
+            with tf.variable_scope("train_test"):
+                self.dec_outputs, self.dec_memory = seq2seq.embedding_rnn_seq2seq(\
+                                self.enc_inp, self.dec_inp, self.cell, \
+                                self.vocab_size, self.vocab_size, self.seq_length)
+            with tf.variable_scope("train_test", reuse = True):
+                self.dec_outputs_tst, _ = seq2seq.embedding_rnn_seq2seq(\
+                                self.enc_inp, self.dec_inp, self.cell, \
+                                self.vocab_size, self.vocab_size, self.seq_length, feed_previous=True)
+
         else:
-            self.dec_outputs, self.dec_memory = seq2seq.embedding_attention_seq2seq(\
-                            self.enc_inp, self.dec_inp, self.cell, \
-                            self.vocab_size, self.vocab_size, self.seq_length)
+            with tf.variable_scope("train_test"):
+                self.dec_outputs, self.dec_memory = seq2seq.embedding_attention_seq2seq(\
+                                self.enc_inp, self.dec_inp, self.cell, \
+                                self.vocab_size, self.vocab_size, self.seq_length)
+            with tf.variable_scope("train_test", reuse = True):
+                self.dec_outputs_tst, _ = seq2seq.embedding_attention_seq2seq(\
+                                self.enc_inp, self.dec_inp, self.cell, \
+                                self.vocab_size, self.vocab_size, self.seq_length, feed_previous=True)
+
 
     def __load_optimizer(self):
         # loss function
@@ -177,7 +189,7 @@ class NeuralNet:
         rev = rev.T
         rev = [np.array([x]) for x in rev]
         feed_dict_rev = {self.enc_inp[t]: rev[t] for t in range(self.seq_length)}
-        rev_out = self.sess.run(self.dec_outputs, feed_dict_rev )
+        rev_out = self.sess.run(self.dec_outputs_tst, feed_dict_rev )
         rev_out = [logits_t.argmax(axis=1) for logits_t in rev_out]
         rev_out = [x[0] for x in rev_out]
 
@@ -186,7 +198,7 @@ class NeuralNet:
     def predict(self):
         self.X_tst = self.X_tst.T
         feed_dict_test = {self.enc_inp[t]: X_tst[t] for t in range(self.seq_length)}
-        dec_outputs_batch = self.sess.run(self.dec_outputs, feed_dict_test)
+        dec_outputs_batch = self.sess.run(self.dec_outputs_tst, feed_dict_test)
         # test answers
         self.test_review = self.X_tst
         self.predicted_test_summary = dec_outputs_batch.T
