@@ -77,8 +77,8 @@ class NeuralNet:
 
             # Decoder input: prepend some "GO" token and drop the final
             # token of the encoder input
-            self.dec_inp = ([tf.zeros_like(self.enc_inp[0], dtype=np.int32, name="GO")]
-               + self.enc_inp[:-1])
+            self.dec_inp = ([tf.zeros_like(self.labels[0], dtype=np.int32, name="GO")]
+               + self.labels[:-1])
 
 
     def __load_model(self):
@@ -189,8 +189,9 @@ class NeuralNet:
 
     def generate_one_summary(self,rev):
         rev = rev.T
-        rev = [np.array([x]) for x in rev]
+        rev = [np.array([int(x)]) for x in rev]
         feed_dict_rev = {self.enc_inp[t]: rev[t] for t in range(self.seq_length)}
+        feed_dict_rev.update({self.labels[t]: rev[t] for t in range(self.seq_length)})
         rev_out = self.sess.run(self.dec_outputs_tst, feed_dict_rev )
         rev_out = [logits_t.argmax(axis=1) for logits_t in rev_out]
         rev_out = [x[0] for x in rev_out]
@@ -200,6 +201,7 @@ class NeuralNet:
     def predict(self):
         self.X_tst = self.X_tst.T
         feed_dict_test = {self.enc_inp[t]: X_tst[t] for t in range(self.seq_length)}
+        feed_dict_test.update({self.labels[t]: X_tst[t] for t in range(self.seq_length)})
         dec_outputs_batch = self.sess.run(self.dec_outputs_tst, feed_dict_test)
         # test answers
         self.test_review = self.X_tst
