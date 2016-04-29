@@ -55,9 +55,9 @@ class NeuralNet:
         self.sess = tf.InteractiveSession(config=config)
 
 
-    def form_model_graph(self):
+    def form_model_graph(self, num_layers = 1):
         self.__load_data_graph()
-        self.__load_model()
+        self.__load_model(num_layers)
         self.__load_optimizer()
         self.__start_session()
 
@@ -81,7 +81,7 @@ class NeuralNet:
                + self.labels[:-1])
 
 
-    def __load_model(self, num_layers=1):
+    def __load_model(self, num_layers):
         # Initial memory value for recurrence.
         self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
 
