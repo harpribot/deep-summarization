@@ -203,10 +203,15 @@ class NeuralNet:
         feed_dict_test = {self.enc_inp[t]: X_tst[t] for t in range(self.seq_length)}
         feed_dict_test.update({self.labels[t]: X_tst[t] for t in range(self.seq_length)})
         dec_outputs_batch = self.sess.run(self.dec_outputs_tst, feed_dict_test)
+
+        # Do a softmax layer to get the final result
+        summary_test_out = [logits_t.argmax(axis=1) for logits_t in summary_test_prob]
+        summary_test_out = [x[0] for x in summary_test_out]
         # test answers
         self.test_review = self.X_tst
-        self.predicted_test_summary = dec_outputs_batch.T
+        self.predicted_test_summary = summary_test_out
         self.true_summary = self.Y_tst
+
 
     def store_test_predictions(self, outfile):
         review = []
