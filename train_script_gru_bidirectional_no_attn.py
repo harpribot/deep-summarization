@@ -1,4 +1,4 @@
-from algorithms import gru_bidirectional
+from models import gru_bidirectional
 
 # Get the review summary file
 review_summary_file = 'extracted_data/review_summary.csv'

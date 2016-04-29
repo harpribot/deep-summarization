@@ -1,5 +1,5 @@
 import numpy as np
-from algorithms.extracter import Spider
+from helpers.extracter import Spider
 
 inputfile = 'raw_data/foods.txt'
 outputfile = 'extracted_data/review_summary.csv'

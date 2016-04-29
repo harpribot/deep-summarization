@@ -1,4 +1,4 @@
-from algorithms import lstm_bidirectional
+from models import lstm_bidirectional
 
 # Get the review summary file
 review_summary_file = 'extracted_data/review_summary.csv'

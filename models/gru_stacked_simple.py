@@ -3,7 +3,7 @@ from tensorflow.python.framework import ops
 import tensorflow as tf
 from tensorflow.models.rnn import seq2seq, rnn_cell
 import numpy as np
-from data2tensor import Mapper
+from helpers.data2tensor import Mapper
 from sklearn.cross_validation import train_test_split
 import tempfile
 import pandas as pd
@@ -48,16 +48,16 @@ class NeuralNet:
     def begin_session(self):
         # start the tensorflow session
         ops.reset_default_graph()
-	# assign efficient allocator
-	config = tf.ConfigProto()
-	config.gpu_options.allocator_type = 'BFC'
-	# initialize interactive session
+    	# assign efficient allocator
+    	config = tf.ConfigProto()
+    	config.gpu_options.allocator_type = 'BFC'
+    	# initialize interactive session
         self.sess = tf.InteractiveSession(config=config)
 
 
-    def form_model_graph(self):
+    def form_model_graph(self, num_layers=1):
         self.__load_data_graph()
-        self.__load_model()
+        self.__load_model(num_layers)
         self.__load_optimizer()
         self.__start_session()
 
@@ -81,13 +81,15 @@ class NeuralNet:
                + self.labels[:-1])
 
 
-    def __load_model(self):
+    def __load_model(self, num_layers):
         # Initial memory value for recurrence.
         self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("train_test", reuse=True):
-            self.cell = rnn_cell.LSTMCell(self.memory_dim)
+            gru = rnn_cell.GRUCell(self.memory_dim)
+            # Stacks layers of RNN's to form a stacked decoder
+            self.cell = rnn_cell.MultiRNNCell([gru] * num_layers)
 
         # embedding model
         if not self.attention:

@@ -3,7 +3,7 @@ from tensorflow.python.framework import ops
 import tensorflow as tf
 from tensorflow.models.rnn import seq2seq, rnn_cell
 import numpy as np
-from data2tensor import Mapper
+from helpers.data2tensor import Mapper
 from sklearn.cross_validation import train_test_split
 import tempfile
 import pandas as pd
@@ -48,10 +48,10 @@ class NeuralNet:
     def begin_session(self):
         # start the tensorflow session
         ops.reset_default_graph()
-	# assign efficient allocator
-	config = tf.ConfigProto()
-	config.gpu_options.allocator_type = 'BFC'
-	# initialize interactive session
+    	# assign efficient allocator
+    	config = tf.ConfigProto()
+    	config.gpu_options.allocator_type = 'BFC'
+    	# initialize interactive session
         self.sess = tf.InteractiveSession(config=config)
 
 
@@ -87,7 +87,7 @@ class NeuralNet:
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("train_test", reuse=True):
-            self.cell = rnn_cell.GRUCell(self.memory_dim)
+            self.cell = rnn_cell.LSTMCell(self.memory_dim)
 
         # embedding model
         if not self.attention:
