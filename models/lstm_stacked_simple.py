@@ -7,17 +7,18 @@ from helpers.data2tensor import Mapper
 from sklearn.cross_validation import train_test_split
 import tempfile
 import pandas as pd
+import cPickle as pickle
 
 class NeuralNet:
-    def __init__(self,review_summary_file, attention = False):
+    def __init__(self,review_summary_file, checkpointer, attention = False):
         # Set attention flag
         self.attention = attention
+        # Store the provided checkpoint (if any)
+        self.checkpointer= checkpointer
+
         # Get the input labels and output review
         self.review_summary_file = review_summary_file
         self.__load_data()
-
-        # Split into test and train data
-        self.__split_train_tst()
 
         # Load all the parameters
         self.__load_model_params()
@@ -28,16 +29,45 @@ class NeuralNet:
         self.learning_rate = learning_rate
 
     def __load_data(self):
-        self.mapper = Mapper()
-        self.mapper.generate_vocabulary(self.review_summary_file)
-        self.X,self.Y = self.mapper.get_tensor()
+        '''
+            Load data only if the present data is not checkpointed,
+            else, just load the checkpointed data
+        '''
+        mapper_file = self.checkpointer.get_mapper_file_location()
+        data_file = self.checkpointer.get_data_file_location()
+        if(not self.checkpointer.is_data_checkpointed()):
+            print 'Reading in the data... No data checkpoint found.'
+            self.mapper = Mapper()
+            self.mapper.generate_vocabulary(self.review_summary_file)
+            self.X,self.Y = self.mapper.get_tensor()
+            # Split into test and train data
+            self.__split_train_tst()
+            # Store the files to be retrieved if checkpointing required
+            print 'Dumping the data and mapper for reuse.'
+            pickle.dump(self.mapper, open(mapper_file, 'wb'))
+            np.savetxt(data_file + '/X_trn.csv', self.X_trn, delimiter=",")
+            np.savetxt(data_file + '/X_tst.csv', self.X_tst, delimiter=",")
+            np.savetxt(data_file + '/Y_trn.csv', self.Y_trn, delimiter=",")
+            np.savetxt(data_file + '/Y_tst.csv', self.Y_tst, delimiter=",")
+            print 'Dump complete. Moving Forward...'
+        else:
+            print 'Data Checkpoint found... Reading from data dump'
+            self.mapper = pickle.load(open(mapper_file,'rb'))
+            self.X_trn = pd.read_csv(data_file + '/X_trn.csv', header=0).values
+            self.X_tst = pd.read_csv(data_file + '/X_tst.csv', header=0).values
+            self.Y_trn = pd.read_csv(data_file + '/Y_trn.csv', header=0).values
+            self.Y_tst = pd.read_csv(data_file + '/Y_tst.csv', header=0).values
+            print 'Data unpickling complete.. Moving forward...'
+
+        self.train_size = self.X_trn.shape[0]
+        self.test_size = self.X_tst.shape[0]
+
 
     def __split_train_tst(self):
         # divide the data into training and testing data
         self.X_trn, self.X_tst, self.Y_trn, self.Y_tst = \
                 train_test_split(self.X, self.Y, test_size=0.05, random_state=42)
-        self.train_size = self.X_trn.shape[0]
-        self.test_size = self.X_tst.shape[0]
+
 
     def __load_model_params(self):
         # parameters
@@ -55,7 +85,7 @@ class NeuralNet:
         self.sess = tf.InteractiveSession(config=config)
 
 
-    def form_model_graph(self, num_layers = 1):
+    def form_model_graph(self,num_layers=2):
         self.__load_data_graph()
         self.__load_model(num_layers)
         self.__load_optimizer()
@@ -81,7 +111,7 @@ class NeuralNet:
                + self.labels[:-1])
 
 
-    def __load_model(self, num_layers):
+    def __load_model(self,num_layers):
         # Initial memory value for recurrence.
         self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
 
@@ -125,11 +155,33 @@ class NeuralNet:
 
     def __start_session(self):
         self.sess.run(tf.initialize_all_variables())
+        # initialize the saver node
+        self.saver = tf.train.Saver()
+        # get the latest checkpoint
+        last_checkpoint_path = self.checkpointer.get_last_checkpoint()
+        if last_checkpoint_path is not None:
+            print 'Previous saved tensorflow objects found... Extracting...'
+            # restore the tensorflow variables
+            self.saver.restore(self.sess, last_checkpoint_path)
+            print 'Extraction Complete. Moving Forward....'
+
+
 
     def fit(self):
         # Iterate and train.
-        for step in xrange(self.train_size // self.batch_size):
+        step_file = self.checkpointer.get_step_file()
+        start_step = pickle.load(open(step_file,'rb'))
+        for step in xrange(start_step, self.train_size // self.batch_size):
             print 'Step No.:', step
+            # Checkpoint tensorflow variables for recovery
+            if(step % self.checkpointer.get_checkpoint_steps() == 0):
+                print 'Checkpointing: Saving Tensorflow variables'
+                self.saver.save(self.sess, self.checkpointer.get_save_address())
+                pickle.dump(step + 1, open(step_file, 'wb'))
+                print 'Checkpointing Complete. Deleting historical checkpoints....'
+                self.checkpointer.delete_previous_checkpoints(num_previous=5)
+                print 'Deleted.. Moving forward...'
+
             offset = (step * self.batch_size) % self.train_size
             batch_data = self.X_trn[offset:(offset + self.batch_size), :].T
             batch_labels = self.Y_trn[offset:(offset + self.batch_size),:].T
@@ -204,7 +256,7 @@ class NeuralNet:
         self.X_tst = self.X_tst.T
         feed_dict_test = {self.enc_inp[t]: X_tst[t] for t in range(self.seq_length)}
         feed_dict_test.update({self.labels[t]: X_tst[t] for t in range(self.seq_length)})
-        ummary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
+        summary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
 
         # Do a softmax layer to get the final result
         summary_test_out = [logits_t.argmax(axis=1) for logits_t in summary_test_prob]
