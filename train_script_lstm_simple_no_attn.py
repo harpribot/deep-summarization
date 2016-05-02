@@ -1,11 +1,14 @@
 from models import lstm_simple
-
+from helpers import checkpoint
 # Get the review summary file
 review_summary_file = 'extracted_data/review_summary.csv'
 
+# Initialize Checkpointer to ensure checkpointing
+checkpointer = checkpoint.Checkpointer('simple','lstm','noAttention')
+checkpointer.steps_per_checkpoint(500)
 # Do using LSTM cell - without attention mechanism
 out_file = 'result/simple/lstm/no_attention.csv'
-lstm_net = lstm_simple.NeuralNet(review_summary_file)
+lstm_net = lstm_simple.NeuralNet(review_summary_file, checkpointer)
 lstm_net.set_parameters(batch_size=15, memory_dim=15,learning_rate=0.05)
 lstm_net.begin_session()
 lstm_net.form_model_graph()
