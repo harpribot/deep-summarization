@@ -89,7 +89,7 @@ class Checkpointer:
         if type_op is 'bidirectional':
             if 'X_trn_fwd.csv' in os.listdir(self.get_data_file_location()):
                 return True
-        else if type_op is None:
+        elif type_op is None:
             if 'X_trn.csv' in os.listdir(self.get_data_file_location()):
                 return True
         else:
