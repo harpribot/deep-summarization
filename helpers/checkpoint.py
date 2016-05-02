@@ -13,7 +13,10 @@ class Checkpointer:
         self.last_id = 0
         self.step_save_location = 'steps.p'
         self.data_save_location = 'data'
-        self.mapper_save_location = 'mapper.p'
+        if model_nm == 'bidirectional' or model_nm ==  'stackedBidirectional':
+            self.mapper_save_location = 'mapper_bi.p'
+        else:
+            self.mapper_save_location = 'mapper.p'
         # initialize the steps if not initialized
         if self.step_save_location not in os.listdir(self.get_checkpoint_location()):
             pickle.dump(0,open(self.get_step_file(), 'wb'))
@@ -58,10 +61,11 @@ class Checkpointer:
             This is done to prevent blowing out of memory due to too many
             checkpoints
         '''
-        if(len(self.present_checkpoints) >= num_previous):
+        self.present_checkpoints = glob.glob(self.get_checkpoint_location() + '/*.ckpt')
+        if(len(self.present_checkpoints) > num_previous):
             present_ids = [self.__get_id(ckpt) for ckpt in self.present_checkpoints]
             present_ids.sort()
-            ids_2_delete = present_ids[0:num_previous - len(present_ids) + 1]
+            ids_2_delete = present_ids[0:len(present_ids) - num_previous]
             for ckpt_id in ids_2_delete:
                 ckpt_file_nm = self.get_checkpoint_location() + '/model_' \
                                 + str(ckpt_id) + '.ckpt'
