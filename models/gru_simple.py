@@ -40,11 +40,17 @@ class NeuralNet:
             self.mapper = Mapper()
             self.mapper.generate_vocabulary(self.review_summary_file)
             self.X,self.Y = self.mapper.get_tensor()
+            # Store all the mapper values in a dict for later recovery
+            self.mapper_dict = {}
+            self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
+            self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
+            self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
+
             # Split into test and train data
             self.__split_train_tst()
             # Store the files to be retrieved if checkpointing required
-            print 'Dumping the data and mapper for reuse.'
-            pickle.dump(self.mapper, open(mapper_file, 'wb'))
+            print 'Dumping the data and mapper dictionary for reuse.'
+            pickle.dump(self.mapper_dict, open(mapper_file, 'wb'))
             np.savetxt(data_file + '/X_trn.csv', self.X_trn, delimiter=",")
             np.savetxt(data_file + '/X_tst.csv', self.X_tst, delimiter=",")
             np.savetxt(data_file + '/Y_trn.csv', self.Y_trn, delimiter=",")
@@ -52,7 +58,7 @@ class NeuralNet:
             print 'Dump complete. Moving Forward...'
         else:
             print 'Data Checkpoint found... Reading from data dump'
-            self.mapper = pickle.load(open(mapper_file,'rb'))
+            self.mapper_dict = pickle.load(open(mapper_file,'rb'))
             self.X_trn = pd.read_csv(data_file + '/X_trn.csv', header=0).values
             self.X_tst = pd.read_csv(data_file + '/X_tst.csv', header=0).values
             self.Y_trn = pd.read_csv(data_file + '/Y_trn.csv', header=0).values
@@ -71,8 +77,8 @@ class NeuralNet:
 
     def __load_model_params(self):
         # parameters
-        self.seq_length = self.mapper.get_seq_length()
-        self.vocab_size = self.mapper.get_vocabulary_size()
+        self.seq_length = self.mapper_dict['seq_length']
+        self.vocab_size = self.mapper_dict['vocab_size']
         self.momentum = 0.9
 
     def begin_session(self):
@@ -230,7 +236,7 @@ class NeuralNet:
 
 
     def __index2sentence(self,list_):
-        rev_map = self.mapper.get_reverse_map()
+        rev_map = self.mapper_dict['rev_map']
         sentence = ""
         for entry in list_:
             if entry != 0:
