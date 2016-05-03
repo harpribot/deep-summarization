@@ -86,15 +86,14 @@ class Checkpointer:
     def get_mapper_file_location(self):
         return  'checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
 
+    def get_mapper_folder_location(self):
+        return  'checkpoint/' + self.data_save_location
+
     def get_step_file(self):
         return self.get_checkpoint_location() + '/' + self.step_save_location
 
-    def is_data_checkpointed(self,type_op=None):
-        if type_op is 'bidirectional':
-            if 'X_trn_fwd.csv' in os.listdir(self.get_data_file_location()):
-                return True
-        elif type_op is None:
-            if 'X_trn.csv' in os.listdir(self.get_data_file_location()):
-                return True
+    def is_mapper_checkpointed(self,type_op=None):
+        if self.mapper_save_location in os.listdir(self.get_mapper_folder_location()):
+            return True
         else:
             return False

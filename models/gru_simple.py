@@ -8,6 +8,7 @@ from sklearn.cross_validation import train_test_split
 import tempfile
 import pandas as pd
 import cPickle as pickle
+import random
 
 class NeuralNet:
     def __init__(self,review_summary_file, checkpointer, attention = False):
@@ -33,46 +34,48 @@ class NeuralNet:
             Load data only if the present data is not checkpointed,
             else, just load the checkpointed data
         '''
-        mapper_file = self.checkpointer.get_mapper_file_location()
-        data_file = self.checkpointer.get_data_file_location()
-        if(not self.checkpointer.is_data_checkpointed()):
-            print 'Reading in the data... No data checkpoint found.'
-            self.mapper = Mapper()
-            self.mapper.generate_vocabulary(self.review_summary_file)
-            self.X,self.Y = self.mapper.get_tensor()
-            # Store all the mapper values in a dict for later recovery
-            self.mapper_dict = {}
-            self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
-            self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
-            self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
-
-            # Split into test and train data
-            self.__split_train_tst()
-            # Store the files to be retrieved if checkpointing required
-            print 'Dumping the data and mapper dictionary for reuse.'
-            pickle.dump(self.mapper_dict, open(mapper_file, 'wb'))
-            np.savetxt(data_file + '/X_trn.csv', self.X_trn, delimiter=",")
-            np.savetxt(data_file + '/X_tst.csv', self.X_tst, delimiter=",")
-            np.savetxt(data_file + '/Y_trn.csv', self.Y_trn, delimiter=",")
-            np.savetxt(data_file + '/Y_tst.csv', self.Y_tst, delimiter=",")
-            print 'Dump complete. Moving Forward...'
-        else:
-            print 'Data Checkpoint found... Reading from data dump'
-            self.mapper_dict = pickle.load(open(mapper_file,'rb'))
-            self.X_trn = pd.read_csv(data_file + '/X_trn.csv', header=0).values
-            self.X_tst = pd.read_csv(data_file + '/X_tst.csv', header=0).values
-            self.Y_trn = pd.read_csv(data_file + '/Y_trn.csv', header=0).values
-            self.Y_tst = pd.read_csv(data_file + '/Y_tst.csv', header=0).values
-            print 'Data unpickling complete.. Moving forward...'
-
-        self.train_size = self.X_trn.shape[0]
-        self.test_size = self.X_tst.shape[0]
-
+        self.mapper = Mapper()
+        self.mapper.generate_vocabulary(self.review_summary_file)
+        self.X,self.Y = self.mapper.get_tensor()
+        # Store all the mapper values in a dict for later recovery
+        self.mapper_dict = {}
+        self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
+        self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
+        self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
+        # Split into test and train data
+        self.__split_train_tst()
 
     def __split_train_tst(self):
         # divide the data into training and testing data
-        self.X_trn, self.X_tst, self.Y_trn, self.Y_tst = \
-                train_test_split(self.X, self.Y, test_size=0.05, random_state=42)
+        # Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst_fwd
+        # Note that only the reviews are changed, and not the summary.
+        num_samples = self.Y.shape[0]
+        mapper_file = self.checkpointer.get_mapper_file_location()
+        if(not self.checkpointer.is_mapper_checkpointed()):
+            print 'No mapper checkpoint found. Fresh loading in progress ...'
+            # Now shuffle the data
+            sample_id = range(num_samples)
+            random.shuffle(sample_id)
+            print 'Dumping the mapper shuffle for reuse.'
+            pickle.dump(sample_id,open(mapper_file,'wb'))
+            print 'Dump complete. Moving Forward...'
+        else:
+            print 'Mapper Checkpoint found... Reading from mapper dump'
+            sample_id = pickle.load(open(mapper_file,'rb'))
+            print 'Mapping unpickling complete.. Moving forward...'
+
+        self.X = self.X[sample_id]
+        self.Y = self.Y[sample_id]
+        # Now divide the data into test ans train set
+        test_fraction = 0.05
+        self.test_size = int(test_fraction * num_samples)
+        self.train_size = num_samples - self.test_size
+        # review
+        self.X_trn = self.X[0:self.train_size]
+        self.X_tst = self.X[self.train_size:num_samples]
+        # Summary
+        self.Y_trn = self.Y[0:self.train_size]
+        self.Y_tst = self.Y[self.train_size:num_samples]
 
 
     def __load_model_params(self):
@@ -183,7 +186,7 @@ class NeuralNet:
                 self.saver.save(self.sess, self.checkpointer.get_save_address())
                 pickle.dump(step + 1, open(step_file, 'wb'))
                 print 'Checkpointing Complete. Deleting historical checkpoints....'
-                self.checkpointer.delete_previous_checkpoints(num_previous=5)
+                self.checkpointer.delete_previous_checkpoints(num_previous=2)
                 print 'Deleted.. Moving forward...'
 
 
