@@ -24,8 +24,9 @@ class NeuralNet:
         # Load all the parameters
         self.__load_model_params()
 
-    def set_parameters(self, batch_size, memory_dim, learning_rate):
-        self.batch_size = batch_size
+    def set_parameters(self, train_batch_size,test_batch_size, memory_dim, learning_rate):
+        self.train_batch_size = train_batch_size
+        self.test_batch_size = test_batch_size
         self.memory_dim = memory_dim
         self.learning_rate = learning_rate
 
@@ -122,7 +123,7 @@ class NeuralNet:
 
     def __load_model(self):
         # Initial memory value for recurrence.
-        self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
+        self.prev_mem = tf.zeros((self.train_batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("train_test", reuse=True):
@@ -178,7 +179,7 @@ class NeuralNet:
         # Iterate and train.
         step_file = self.checkpointer.get_step_file()
         start_step = pickle.load(open(step_file,'rb'))
-        for step in xrange(start_step, self.train_size // self.batch_size):
+        for step in xrange(start_step, self.train_size // self.train_batch_size):
             print 'Step No.:', step
             # Checkpoint tensorflow variables for recovery
             if(step % self.checkpointer.get_checkpoint_steps() == 0):
@@ -190,9 +191,9 @@ class NeuralNet:
                 print 'Deleted.. Moving forward...'
 
 
-            offset = (step * self.batch_size) % self.train_size
-            batch_data = self.X_trn[offset:(offset + self.batch_size), :].T
-            batch_labels = self.Y_trn[offset:(offset + self.batch_size),:].T
+            offset = (step * self.train_batch_size) % self.train_size
+            batch_data = self.X_trn[offset:(offset + self.train_batch_size), :].T
+            batch_labels = self.Y_trn[offset:(offset + self.train_batch_size),:].T
 
             loss_t = self.__train_batch(batch_data, batch_labels)
             print "Present Loss:", loss_t
@@ -261,34 +262,53 @@ class NeuralNet:
         return rev_out
 
     def predict(self):
-        self.X_tst = self.X_tst.T
-        feed_dict_test = {self.enc_inp[t]: self.X_tst[t] for t in range(self.seq_length)}
-        feed_dict_test.update({self.labels[t]: self.X_tst[t] for t in range(self.seq_length)})
-        summary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
+        self.predicted_test_summary = []
+        for step in xrange(0, self.test_size // self.test_batch_size):
+            print 'Predicting Batch No.:', step
+            offset = (step * self.test_batch_size) % self.test_size
+            batch_data = self.X_tst[offset:(offset + self.test_batch_size), :].T
+            summary_test_out = self.__predict_batch(batch_data)
+            self.predicted_test_summary.extend(summary_test_out)
 
+        print 'Prediction Complete. Moving Forward..'
+
+        # test answers
+        self.test_review = self.X_tst
+        self.predicted_test_summary = self.predicted_test_summary
+        self.true_summary = self.Y_tst
+
+    def __predict_batch(self, review):
+        summary_out = []
+        feed_dict_test = {self.enc_inp[t]: review[t] for t in range(self.seq_length)}
+        feed_dict_test.update({self.labels[t]: review[t] for t in range(self.seq_length)})
+        summary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
 
         # Do a softmax layer to get the final result
         summary_test_out = [logits_t.argmax(axis=1) for logits_t in summary_test_prob]
-        summary_test_out = [x[0] for x in summary_test_out]
-        # test answers
-        self.test_review = self.X_tst
-        self.predicted_test_summary = summary_test_out
-        self.true_summary = self.Y_tst
+
+        for i in range(self.test_batch_size):
+            summary_out.append([x[i] for x in summary_test_out])
+
+        return summary_out
+
 
     def store_test_predictions(self, outfile):
+        print 'Storing predictions on Test Data...'
         review = []
         true_summary = []
         generated_summary = []
         for i in range(self.test_size):
             review.append(self.__index2sentence(self.test_review[i]))
-            true_summary.append(self.__index2sentence(self.true_summary))
-            generated_summary.append(self.__index2sentence(self.predicted_test_summary))
+            true_summary.append(self.__index2sentence(self.true_summary[i]))
+            generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
 
         df = pd.DataFrame()
         df['review'] = np.array(review)
         df['true_summary'] = np.array(true_summary)
         df['generated_summary'] = np.array(generated_summary)
         df.to_csv(outfile, index=False)
+        print 'Stored the predictions. All done. Exiting.'
+        print 'Exited'
 
     def close_session(self):
 	self.sess.close()

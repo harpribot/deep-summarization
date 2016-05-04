@@ -23,8 +23,9 @@ class NeuralNet:
         # Load all the parameters
         self.__load_model_params()
 
-    def set_parameters(self, batch_size, memory_dim, learning_rate):
-        self.batch_size = batch_size
+    def set_parameters(self, train_batch_size,test_batch_size, memory_dim, learning_rate):
+        self.train_batch_size = train_batch_size
+        self.test_batch_size = test_batch_size
         self.memory_dim = memory_dim
         self.learning_rate = learning_rate
 
@@ -128,7 +129,7 @@ class NeuralNet:
 
     def __load_model(self):
         # Initial memory value for recurrence.
-        self.prev_mem = tf.zeros((self.batch_size, self.memory_dim))
+        self.prev_mem = tf.zeros((self.train_batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("forward"):
@@ -216,7 +217,7 @@ class NeuralNet:
         # Iterate and train.
         step_file = self.checkpointer.get_step_file()
         start_step = pickle.load(open(step_file,'rb'))
-        for step in xrange(start_step,self.train_size // self.batch_size):
+        for step in xrange(start_step,self.train_size // self.train_batch_size):
             print 'Step No.:', step
             # Checkpoint tensorflow variables for recovery
             if(step % self.checkpointer.get_checkpoint_steps() == 0):
@@ -227,10 +228,10 @@ class NeuralNet:
                 self.checkpointer.delete_previous_checkpoints(num_previous=2)
                 print 'Deleted.. Moving forward...'
 
-            offset = (step * self.batch_size) % self.train_size
-            batch_data_fwd = self.X_trn_fwd[offset:(offset + self.batch_size), :].T
-            batch_data_bwd = self.X_trn_bwd[offset:(offset + self.batch_size), :].T
-            batch_labels = self.Y_trn[offset:(offset + self.batch_size),:].T
+            offset = (step * self.train_batch_size) % self.train_size
+            batch_data_fwd = self.X_trn_fwd[offset:(offset + self.train_batch_size), :].T
+            batch_data_bwd = self.X_trn_bwd[offset:(offset + self.train_batch_size), :].T
+            batch_labels = self.Y_trn[offset:(offset + self.train_batch_size),:].T
 
             loss_t_forward, loss_t_backward = self.__train_batch(batch_data_fwd, batch_data_bwd, batch_labels)
             print "Present Loss Forward:", loss_t_forward
@@ -312,55 +313,67 @@ class NeuralNet:
         summary_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_review_fwd)
         summary_prob_bwd = self.sess.run(self.dec_outputs_bwd_tst, feed_dict_review_bwd)
 
-        summary_sum_pool = (summary_prob_bwd + summary_prob_bwd)
-        summary_avg_pool = [x/2. for x in summary_sum_pool]
-        summary_out = [logits_t.argmax(axis=1) for logits_t in summary_avg_pool]
+        summary_sum_pool = [x + y for x,y in zip(summary_prob_fwd,summary_prob_bwd)]
+        summary_out = [logits_t.argmax(axis=1) for logits_t in summary_sum_pool]
         summary_out = [x[0] for x in summary_out]
 
         return summary_out
 
     def predict(self):
-        self.X_tst_fwd = self.X_tst_fwd.T
-        self.X_tst_bwd = self.X_tst_bwd.T
-        #### Forward probability
-        feed_dict_test_fwd = {self.enc_inp_fwd[t]: self.X_tst_fwd[t] for t in range(self.seq_length)}
-        # This is dummy label, same as input here. We are not using it, as it is test and feed_previous = True
-        feed_dict_test.update({self.labels[t]: self.X_tst_fwd[t] for t in range(self.seq_length)})
-        summary_test_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_test_fwd)
+        self.predicted_test_summary = []
+        for step in xrange(0, self.test_size // self.test_batch_size):
+            print 'Predicting Batch No.:', step
+            offset = (step * self.test_batch_size) % self.test_size
+            batch_data_fwd = self.X_tst_fwd[offset:(offset + self.test_batch_size), :].T
+            batch_data_bwd = self.X_tst_bwd[offset:(offset + self.test_batch_size), :].T
+            summary_test_out = self.__predict_batch(batch_data_fwd, batch_data_bwd)
+            self.predicted_test_summary.extend(summary_test_out)
 
-        #### Backward Probability
-        feed_dict_test_bwd = {self.enc_inp_bwd[t]: self.X_tst_bwd[t] for t in range(self.seq_length)}
-        # This is dummy label, same as input here. We are not using it, as it is test and feed_previous = True
-        feed_dict_test_bwd.update({self.labels[t]: self.X_tst_bwd[t] for t in range(self.seq_length)})
-        summary_test_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_test_fwd)
-
-        # Average the forward and backward probability
-        summary_sum_pool = (summary_prob_bwd + summary_prob_bwd)
-        summary_avg_pool = [x/2. for x in summary_sum_pool]
-
-        # Do a softmax layer to get the final result
-        summary_out = [logits_t.argmax(axis=1) for logits_t in summary_avg_pool]
-        summary_out = [x[0] for x in summary_out]
+        print 'Prediction Complete. Moving Forward..'
 
         # test answers
         self.test_review = self.X_tst_fwd
-        self.predicted_test_summary = summary_out
+        self.predicted_test_summary = self.predicted_test_summary
         self.true_summary = self.Y_tst
 
+    def __predict_batch(self, review_fwd, review_bwd):
+        summary_out = []
+        # Forward
+        feed_dict_test_fwd = {self.enc_inp_fwd[t]: review_fwd[t] for t in range(self.seq_length)}
+        feed_dict_test_fwd.update({self.labels[t]: review_fwd[t] for t in range(self.seq_length)})
+        summary_test_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_test_fwd)
+        # Backward
+        feed_dict_test_bwd = {self.enc_inp_bwd[t]: review_bwd[t] for t in range(self.seq_length)}
+        feed_dict_test_bwd.update({self.labels[t]: review_bwd[t] for t in range(self.seq_length)})
+        summary_test_prob_bwd = self.sess.run(self.dec_outputs_bwd_tst, feed_dict_test_bwd)
+
+        summary_sum_pool = [x + y for x,y in zip(summary_test_prob_fwd,summary_test_prob_bwd)]
+        # Do a softmax layer to get the final result
+        summary_test_out = [logits_t.argmax(axis=1) for logits_t in summary_sum_pool]
+
+        for i in range(self.test_batch_size):
+            summary_out.append([x[i] for x in summary_test_out])
+
+        return summary_out
+
+
     def store_test_predictions(self, outfile):
+        print 'Storing predictions on Test Data...'
         review = []
         true_summary = []
         generated_summary = []
         for i in range(self.test_size):
             review.append(self.__index2sentence(self.test_review[i]))
-            true_summary.append(self.__index2sentence(self.true_summary))
-            generated_summary.append(self.__index2sentence(self.predicted_test_summary))
+            true_summary.append(self.__index2sentence(self.true_summary[i]))
+            generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
 
         df = pd.DataFrame()
         df['review'] = np.array(review)
         df['true_summary'] = np.array(true_summary)
         df['generated_summary'] = np.array(generated_summary)
         df.to_csv(outfile, index=False)
+        print 'Stored the predictions. All done. Exiting.'
+        print 'Exited'
 
     def close_session(self):
 	self.sess.close()
