@@ -324,15 +324,15 @@ class NeuralNet:
         self.X_tst_fwd = self.X_tst_fwd.T
         self.X_tst_bwd = self.X_tst_bwd.T
         #### Forward probability
-        feed_dict_test_fwd = {self.enc_inp_fwd[t]: X_tst_fwd[t] for t in range(self.seq_length)}
+        feed_dict_test_fwd = {self.enc_inp_fwd[t]: self.X_tst_fwd[t] for t in range(self.seq_length)}
         # This is dummy label, same as input here. We are not using it, as it is test and feed_previous = True
-        feed_dict_test.update({self.labels[t]: X_tst_fwd[t] for t in range(self.seq_length)})
+        feed_dict_test.update({self.labels[t]: self.X_tst_fwd[t] for t in range(self.seq_length)})
         summary_test_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_test_fwd)
 
         #### Backward Probability
-        feed_dict_test_bwd = {self.enc_inp_bwd[t]: X_tst_bwd[t] for t in range(self.seq_length)}
+        feed_dict_test_bwd = {self.enc_inp_bwd[t]: self.X_tst_bwd[t] for t in range(self.seq_length)}
         # This is dummy label, same as input here. We are not using it, as it is test and feed_previous = True
-        feed_dict_test_bwd.update({self.labels[t]: X_tst_bwd[t] for t in range(self.seq_length)})
+        feed_dict_test_bwd.update({self.labels[t]: self.X_tst_bwd[t] for t in range(self.seq_length)})
         summary_test_prob_fwd = self.sess.run(self.dec_outputs_fwd_tst, feed_dict_test_fwd)
 
         # Average the forward and backward probability
@@ -344,7 +344,7 @@ class NeuralNet:
         summary_out = [x[0] for x in summary_out]
 
         # test answers
-        self.test_review = self.X_tst
+        self.test_review = self.X_tst_fwd
         self.predicted_test_summary = summary_out
         self.true_summary = self.Y_tst
 

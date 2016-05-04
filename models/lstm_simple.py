@@ -261,8 +261,8 @@ class NeuralNet:
 
     def predict(self):
         self.X_tst = self.X_tst.T
-        feed_dict_test = {self.enc_inp[t]: X_tst[t] for t in range(self.seq_length)}
-        feed_dict_test.update({self.labels[t]: X_tst[t] for t in range(self.seq_length)})
+        feed_dict_test = {self.enc_inp[t]: self.X_tst[t] for t in range(self.seq_length)}
+        feed_dict_test.update({self.labels[t]: self.X_tst[t] for t in range(self.seq_length)})
         summary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
 
         # Do a softmax layer to get the final result

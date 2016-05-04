@@ -266,6 +266,7 @@ class NeuralNet:
         feed_dict_test.update({self.labels[t]: self.X_tst[t] for t in range(self.seq_length)})
         summary_test_prob = self.sess.run(self.dec_outputs_tst, feed_dict_test)
 
+
         # Do a softmax layer to get the final result
         summary_test_out = [logits_t.argmax(axis=1) for logits_t in summary_test_prob]
         summary_test_out = [x[0] for x in summary_test_out]
