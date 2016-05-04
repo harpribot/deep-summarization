@@ -29,7 +29,7 @@ class Checkpointer:
         return self.steps_per_ckpt
 
     def get_checkpoint_location(self):
-        return 'checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
+        return '/scratch/cluster/harshal/checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
 
     def get_last_checkpoint(self):
         '''
@@ -81,13 +81,13 @@ class Checkpointer:
         return self.last_id > 0
 
     def get_data_file_location(self):
-        return  'checkpoint/' + self.data_save_location
+        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
 
     def get_mapper_file_location(self):
-        return  'checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
+        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
 
     def get_mapper_folder_location(self):
-        return  'checkpoint/' + self.data_save_location
+        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
 
     def get_step_file(self):
         return self.get_checkpoint_location() + '/' + self.step_save_location

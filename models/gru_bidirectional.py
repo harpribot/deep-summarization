@@ -225,7 +225,7 @@ class NeuralNet:
                 self.saver.save(self.sess, self.checkpointer.get_save_address())
                 pickle.dump(step + 1, open(step_file, 'wb'))
                 print 'Checkpointing Complete. Deleting historical checkpoints....'
-                self.checkpointer.delete_previous_checkpoints(num_previous=5)
+                self.checkpointer.delete_previous_checkpoints(num_previous=2)
                 print 'Deleted.. Moving forward...'
 
             offset = (step * self.batch_size) % self.train_size
