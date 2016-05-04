@@ -11,7 +11,7 @@ checkpointer.steps_per_checkpoint(500)
 # Do using GRU cell - without attention mechanism
 out_file = 'result/bidirectional/gru/attention.csv'
 gru_net = gru_bidirectional.NeuralNet(review_summary_file, checkpointer,attention=True)
-gru_net.set_parameters(batch_size=15, memory_dim=15,learning_rate=0.05)
+gru_net.set_parameters(train_batch_size=15,test_batch_size=25, memory_dim=15,learning_rate=0.05)
 gru_net.begin_session()
 gru_net.form_model_graph()
 gru_net.fit()
