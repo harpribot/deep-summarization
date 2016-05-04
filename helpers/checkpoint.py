@@ -13,10 +13,7 @@ class Checkpointer:
         self.last_id = 0
         self.step_save_location = 'steps.p'
         self.data_save_location = 'data'
-        if model_nm == 'bidirectional' or model_nm ==  'stackedBidirectional':
-            self.mapper_save_location = 'mapper_bi.p'
-        else:
-            self.mapper_save_location = 'mapper.p'
+        self.mapper_save_location = 'mapper.p'
         # initialize the steps if not initialized
         if self.step_save_location not in os.listdir(self.get_checkpoint_location()):
             pickle.dump(0,open(self.get_step_file(), 'wb'))
@@ -28,8 +25,14 @@ class Checkpointer:
     def get_checkpoint_steps(self):
         return self.steps_per_ckpt
 
+    def steps_per_prediction(self, num_steps):
+        self.num_steps_per_prediction = num_steps
+
+    def get_prediction_checkpoint_steps(self):
+        return self.num_steps_per_prediction
+
     def get_checkpoint_location(self):
-        return '/scratch/cluster/harshal/checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
+        return 'checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
 
     def get_last_checkpoint(self):
         '''
@@ -81,19 +84,32 @@ class Checkpointer:
         return self.last_id > 0
 
     def get_data_file_location(self):
-        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
+        return  'checkpoint/' + self.data_save_location
 
     def get_mapper_file_location(self):
-        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
+        return  'checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
 
     def get_mapper_folder_location(self):
-        return  '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
+        return  'checkpoint/' + self.data_save_location
 
     def get_step_file(self):
         return self.get_checkpoint_location() + '/' + self.step_save_location
 
-    def is_mapper_checkpointed(self,type_op=None):
+    def is_mapper_checkpointed(self):
         if self.mapper_save_location in os.listdir(self.get_mapper_folder_location()):
             return True
         else:
             return False
+
+    def is_output_file_present(self):
+        out_loc = self.outfile.split('/')
+        file_nm = out_loc[3]
+        dir_nm = out_loc[0] + '/' + out_loc[1] + '/' + out_loc[2] + '/'
+
+        return file_nm in os.listdir(dir_nm)
+
+    def set_result_location(self,outfile):
+        self.outfile = outfile
+
+    def get_result_location(self):
+        return self.outfile
