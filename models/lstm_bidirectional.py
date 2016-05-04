@@ -68,7 +68,7 @@ class NeuralNet:
         self.X_bwd = self.X_bwd[sample_id]
         self.Y = self.Y[sample_id]
         # Now divide the data into test ans train set
-        test_fraction = 0.05
+        test_fraction = 0.01
         self.test_size = int(test_fraction * num_samples)
         self.train_size = num_samples - self.test_size
         # Forward review
