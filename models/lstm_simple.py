@@ -207,6 +207,12 @@ class NeuralNet:
             print
             print
 
+            ###### Store prediction after certain number of steps #############
+            # This will be useful for the graph construction
+            if(step % self.checkpointer.get_prediction_checkpoint_steps() == 0):
+                self.predict()
+                self.store_test_predictions('_' + str(step))
+
 
 
     def __train_batch(self,review,summary):
@@ -291,22 +297,32 @@ class NeuralNet:
         return summary_out
 
 
-    def store_test_predictions(self, outfile):
+    def store_test_predictions(self, prediction_id = '_final'):
+        # prediction id is usually the step count
         print 'Storing predictions on Test Data...'
         review = []
         true_summary = []
         generated_summary = []
         for i in range(self.test_size):
-            review.append(self.__index2sentence(self.test_review[i]))
-            true_summary.append(self.__index2sentence(self.true_summary[i]))
+            if not self.checkpointer.is_output_file_present():
+                review.append(self.__index2sentence(self.test_review[i]))
+                true_summary.append(self.__index2sentence(self.true_summary[i]))
             generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
 
-        df = pd.DataFrame()
-        df['review'] = np.array(review)
-        df['true_summary'] = np.array(true_summary)
-        df['generated_summary'] = np.array(generated_summary)
-        df.to_csv(outfile, index=False)
-        print 'Stored the predictions. All done. Exiting.'
-        print 'Exited'
+        prediction_nm = 'generated_summary' + prediction_id
+        if self.checkpointer.is_output_file_present():
+            df = pd.read_csv(self.checkpointer.get_result_location(),header=0)
+            df[prediction_nm] = np.array(generated_summary)
+        else:
+            df = pd.DataFrame()
+            df['review'] = np.array(review)
+            df['true_summary'] = np.array(true_summary)
+            df[prediction_nm] = np.array(generated_summary)
+        df.to_csv(self.checkpointer.get_result_location(), index=False)
+        print 'Stored the predictions. Moving Forward'
+        if prediction_id == '_final':
+            print 'All done. Exiting..'
+            print 'Exited'
+            
     def close_session(self):
 	self.sess.close()
