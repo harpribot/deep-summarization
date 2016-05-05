@@ -378,8 +378,11 @@ class NeuralNet:
             if not self.checkpointer.is_output_file_present():
                 review.append(self.__index2sentence(self.test_review[i]))
                 true_summary.append(self.__index2sentence(self.true_summary[i]))
-            generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
-
+            if i < (self.test_batch_size * (self.test_size // self.test_batch_size)):
+                generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
+            else:
+                generated_summary.append('')
+                
         prediction_nm = 'generated_summary' + prediction_id
         if self.checkpointer.is_output_file_present():
             df = pd.read_csv(self.checkpointer.get_result_location(),header=0)
