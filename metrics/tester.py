@@ -38,10 +38,10 @@ def score(ref, hypo):
             final_scores[method] = score
     return final_scores
 
-if __name__ == '__main__':
+def main():
     # Feed in the directory where the hypothesis summary and true summary is stored
-    hyp_file = glob.glob('hypothesis/*')
-    ref_file = glob.glob('reference/*')
+    hyp_file = glob.glob('metrics/hypothesis/*')
+    ref_file = glob.glob('metrics/reference/*')
 
     BLEU_1 = 0.
     BLEU_2 = 0.
@@ -51,16 +51,11 @@ if __name__ == '__main__':
     num_files = 0
     for reference_file, hypothesis_file in zip(ref_file, hyp_file):
         num_files += 1
-        print reference_file, hypothesis_file
-
         with open(reference_file) as rf:
             reference = rf.readlines()
 
         with open(hypothesis_file) as hf:
             hypothesis = hf.readlines()
-
-        print reference
-        print hypothesis
 
         ref, hypo = load_textfiles(reference, hypothesis)
         score_map = score(ref, hypo)
@@ -71,9 +66,20 @@ if __name__ == '__main__':
         ROUGE_L += score_map['ROUGE_L']
 
 
+    BLEU_1 = BLEU_1/num_files
+    BLEU_2 = BLEU_2/num_files
+    BLEU_3 = BLEU_3/num_files
+    BLEU_4 = BLEU_4/num_files
+    ROUGE_L = ROUGE_L/num_files
+
     print 'Average Metric Score for All Review Summary Pairs:'
-    print 'Bleu - 1gram:', BLEU_1/num_files
-    print 'Bleu - 2gram:', BLEU_2/num_files
-    print 'Bleu - 3gram:', BLEU_3/num_files
-    print 'Bleu - 4gram:', BLEU_4/num_files
-    print 'Rouge:', ROUGE_L/num_files
+    print 'Bleu - 1gram:', BLEU_1
+    print 'Bleu - 2gram:', BLEU_2
+    print 'Bleu - 3gram:', BLEU_3
+    print 'Bleu - 4gram:', BLEU_4
+    print 'Rouge:', ROUGE_L
+
+    return BLEU_1,BLEU_2,BLEU_3, BLEU_4, ROUGE_L
+
+if __name__ == '__main__':
+    main()
