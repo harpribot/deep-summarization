@@ -1,5 +1,4 @@
 #!/bin/sh
-source ~/.bashrc
 # Simple - No Attention
 condorify_gpu_email_hold_on_restart python train_script_lstm_simple_no_attn.py condor_logs/lstm_simple_no_attn.txt
 
