@@ -12,7 +12,7 @@ checkpointer.steps_per_prediction(1000)
 out_file = 'result/stacked_simple/gru/attention.csv'
 checkpointer.set_result_location(out_file)
 gru_net = gru_stacked_simple.NeuralNet(review_summary_file, checkpointer,attention=True)
-gru_net.set_parameters(train_batch_size=10,test_batch_size=25, memory_dim=100,learning_rate=0.05)
+gru_net.set_parameters(train_batch_size=5,test_batch_size=25, memory_dim=50,learning_rate=0.05)
 gru_net.begin_session()
 gru_net.form_model_graph(num_layers=2)
 gru_net.fit()

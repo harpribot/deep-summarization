@@ -11,7 +11,7 @@ checkpointer.steps_per_prediction(2000)
 out_file = 'result/stacked_simple/lstm/no_attention.csv'
 checkpointer.set_result_location(out_file)
 lstm_net = lstm_stacked_simple.NeuralNet(review_summary_file, checkpointer)
-lstm_net.set_parameters(train_batch_size=10,test_batch_size=25, memory_dim=100,learning_rate=0.05)
+lstm_net.set_parameters(train_batch_size=5,test_batch_size=25, memory_dim=50,learning_rate=0.05)
 lstm_net.begin_session()
 lstm_net.form_model_graph(num_layers = 2)
 lstm_net.fit()
