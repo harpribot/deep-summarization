@@ -249,10 +249,11 @@ class NeuralNet:
 
             ###### Store prediction after certain number of steps #############
             # This will be useful for the graph construction
+            '''
             if(step % self.checkpointer.get_prediction_checkpoint_steps() == 0):
                 self.predict()
                 self.store_test_predictions('_' + str(step))
-
+            '''
 
 
     def __train_batch(self,review_fwd, review_bwd,summary):
@@ -377,7 +378,7 @@ class NeuralNet:
                 generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
             else:
                 generated_summary.append('')
-                
+
         prediction_nm = 'generated_summary' + prediction_id
         if self.checkpointer.is_output_file_present():
             df = pd.read_csv(self.checkpointer.get_result_location(),header=0)

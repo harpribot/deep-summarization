@@ -254,9 +254,11 @@ class NeuralNet:
 
             ###### Store prediction after certain number of steps #############
             # This will be useful for the graph construction
+            '''
             if(step % self.checkpointer.get_prediction_checkpoint_steps() == 0):
                 self.predict()
                 self.store_test_predictions('_' + str(step))
+            '''
 
 
 
