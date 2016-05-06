@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 
 class Spider:
-    def __init__(self):
-        pass
+    def __init__(self,num_reviews):
+        self.num_reviews = num_reviews
 
     def crawl_for_reviews_and_summary(self, input_file):
         self.raw_data_file = input_file
@@ -14,9 +14,13 @@ class Spider:
     def __crawl_review(self):
         review_list = []
         print 'Crawling Reviews....'
+        num_lines = 0
         with open(self.raw_data_file) as infile:
             for line in infile:
                 if(line.startswith('review/text')):
+                    if num_lines >= self.num_reviews:
+                        break
+                    num_lines += 1
                     _,review = line.split('/text: ')
                     review_list.append(review)
 
@@ -25,9 +29,13 @@ class Spider:
     def __crawl_summary(self):
         summary_list = []
         print 'Crawling Summary....'
+        num_lines = 0
         with open(self.raw_data_file) as infile:
             for line in infile:
                 if(line.startswith('review/summary')):
+                    if num_lines >= self.num_reviews:
+                        break
+                    num_lines += 1
                     _,summary = line.split('/summary: ')
                     summary_list.append(summary)
 
