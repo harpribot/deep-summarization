@@ -203,7 +203,7 @@ class NeuralNet:
             print
             print
             print 'Test Data Validation\n'
-            self.__visual_validate(self.X_tst[156,:],self.Y_tst[156,:])
+            self.__visual_validate(self.X_tst[56,:],self.Y_tst[56,:])
             print
             print
 
