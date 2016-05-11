@@ -156,9 +156,10 @@ class NeuralNet:
                                                 self.weights, self.vocab_size)
 
         # optimizer
-        self.optimizer = tf.train.MomentumOptimizer(self.learning_rate, \
-                                                    self.momentum)
-        self.train_op = self.optimizer.minimize(self.loss)
+        #self.optimizer = tf.train.MomentumOptimizer(self.learning_rate, \
+        #                                            self.momentum)
+        self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+	self.train_op = self.optimizer.minimize(self.loss)
 
 
     def __start_session(self):

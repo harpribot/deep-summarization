@@ -187,18 +187,20 @@ class NeuralNet:
                                                 self.weights, self.vocab_size)
 
             # optimizer
-            self.optimizer_fwd = tf.train.MomentumOptimizer(self.learning_rate, \
-                                                    self.momentum)
-            self.train_op_fwd = self.optimizer_fwd.minimize(self.loss_fwd)
+            #self.optimizer_fwd = tf.train.MomentumOptimizer(self.learning_rate, \
+            #                                        self.momentum)
+            self.optimizer_fwd = tf.train.GradientDescentOptimizer(self.learning_rate)
+	    self.train_op_fwd = self.optimizer_fwd.minimize(self.loss_fwd)
 
         with tf.variable_scope("backward"):
             self.loss_bwd = seq2seq.sequence_loss(self.dec_outputs_bwd, self.labels, \
                                                 self.weights, self.vocab_size)
 
             # optimizer
-            self.optimizer_bwd = tf.train.MomentumOptimizer(self.learning_rate, \
-                                                    self.momentum)
-            self.train_op_bwd = self.optimizer_bwd.minimize(self.loss_bwd)
+            #self.optimizer_bwd = tf.train.MomentumOptimizer(self.learning_rate, \
+            #                                        self.momentum)
+            self.optimizer_bwd = tf.train.GradientDescentOptimizer(self.learning_rate)
+	    self.train_op_bwd = self.optimizer_bwd.minimize(self.loss_bwd)
 
 
     def __start_session(self):

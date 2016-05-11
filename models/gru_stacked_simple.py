@@ -83,7 +83,7 @@ class NeuralNet:
         # parameters
         self.seq_length = self.mapper_dict['seq_length']
         self.vocab_size = self.mapper_dict['vocab_size']
-        self.momentum = 0.9
+        self.momentum = 0.25
 
     def begin_session(self):
         # start the tensorflow session
