@@ -9,7 +9,7 @@ Uses Recurrent Neural Network (LSTM and GRU units) for developing Seq2Seq Encode
 - [References](#references)
 
 ## Encoder Decoder Model
-![Model](assets/encoderdecoder.png)
+![Model](/assets/encoderdecoder.png)
 
 ## DataSet
 - **DataSet Information** - This dataset consists of reviews of fine foods from amazon. The data span a period of more than 10 years, including all ~500,000 reviews up to October 2012. Reviews include product and user information, ratings, and a plaintext review.
