@@ -9,7 +9,7 @@ result_file_3 = 'result/stacked_simple/gru/no_attention.csv'
 result_file_4 = 'result/stacked_bidirectional/gru/no_attention.csv'
 
 
-result_file_description = ['gru_smpl','gru_bidr','gru_stack_smpl','gru_stack_bidr']
+result_file_description = ['gru_smpl', 'gru_bidr', 'gru_stack_smpl', 'gru_stack_bidr']
 hypothesis_dir = 'metrics/hypothesis'
 reference_dir = 'metrics/reference'
 

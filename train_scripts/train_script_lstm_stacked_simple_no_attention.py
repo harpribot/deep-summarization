@@ -1,10 +1,13 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '..'))
 from models import lstm_stacked_simple
 from helpers import checkpoint
 # Get the review summary file
 review_summary_file = 'extracted_data/review_summary.csv'
 
 # Initialize Checkpointer to ensure checkpointing
-checkpointer = checkpoint.Checkpointer('stackedSimple','lstm','noAttention')
+checkpointer = checkpoint.Checkpointer('stackedSimple', 'lstm', 'noAttention')
 checkpointer.steps_per_checkpoint(1000)
 checkpointer.steps_per_prediction(2000)
 # Do using GRU cell - without attention mechanism

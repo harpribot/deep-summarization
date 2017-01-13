@@ -1,4 +1,4 @@
-from tensorflow.models.rnn import rnn_cell
+import tensorflow as tf
 from models.stacked_bidirectional import StackedBidirectional
 
 
@@ -18,4 +18,4 @@ class LstmStackedBidirectional(StackedBidirectional):
 
         :return:
         """
-        return rnn_cell.LSTMCell(self.memory_dim)
+        return tf.nn.rnn_cell.LSTMCell(self.memory_dim)

@@ -1,4 +1,4 @@
-from tensorflow.models.rnn import rnn_cell
+import tensorflow as tf
 from models.bidirectional import Bidirectional
 
 
@@ -17,4 +17,4 @@ class GruBidirectional(Bidirectional):
 
         :return:
         """
-        return rnn_cell.GRUCell(self.memory_dim)
+        return tf.nn.rnn_cell.GRUCell(self.memory_dim)

@@ -64,7 +64,7 @@ class Checkpointer:
 
         :return:
         """
-        return '/scratch/cluster/harshal/checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
+        return 'checkpoint/' + self.model_nm + '/' + self.cell_nm + '/' + self.attention_type
 
     def get_last_checkpoint(self):
         """
@@ -108,8 +108,7 @@ class Checkpointer:
             present_ids.sort()
             ids_2_delete = present_ids[0:len(present_ids) - num_previous]
             for ckpt_id in ids_2_delete:
-                ckpt_file_nm = self.get_checkpoint_location() + '/model_' \
-                                + str(ckpt_id) + '.ckpt'
+                ckpt_file_nm = self.get_checkpoint_location() + '/model_' + str(ckpt_id) + '.ckpt'
                 os.remove(ckpt_file_nm)
 
     def get_save_address(self):
@@ -119,7 +118,7 @@ class Checkpointer:
         """
         _ = self.get_last_checkpoint()
         next_id = self.last_id + 1
-        return self.get_checkpoint_location()+'/model_'+ str(next_id)+'.ckpt'
+        return self.get_checkpoint_location() + '/model_' + str(next_id) + '.ckpt'
 
     def is_checkpointed(self):
         """
@@ -133,21 +132,21 @@ class Checkpointer:
 
         :return:
         """
-        return '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
+        return 'checkpoint/' + self.data_save_location
 
     def get_mapper_file_location(self):
         """
 
         :return:
         """
-        return '/scratch/cluster/harshal/checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
+        return 'checkpoint/' + self.data_save_location + '/' + self.mapper_save_location
 
     def get_mapper_folder_location(self):
         """
 
         :return:
         """
-        return '/scratch/cluster/harshal/checkpoint/' + self.data_save_location
+        return 'checkpoint/' + self.data_save_location
 
     def get_step_file(self):
         """
@@ -177,7 +176,7 @@ class Checkpointer:
 
         return file_nm in os.listdir(dir_nm)
 
-    def set_result_location(self,outfile):
+    def set_result_location(self, outfile):
         """
 
         :param outfile:
