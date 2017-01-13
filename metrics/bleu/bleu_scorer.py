@@ -20,10 +20,17 @@ import copy
 import sys, math, re
 from collections import defaultdict
 
+
 def precook(s, n=4, out=False):
-    """Takes a string as input and returns an object that can be given to
+    """
+    Takes a string as input and returns an object that can be given to
     either cook_refs or cook_test. This is optional: cook_refs and cook_test
-    can take string arguments as well."""
+    can take string arguments as well.
+    :param s:
+    :param n:
+    :param out:
+    :return:
+    """
     words = s.split()
     counts = defaultdict(int)
     for k in xrange(1,n+1):
@@ -32,11 +39,17 @@ def precook(s, n=4, out=False):
             counts[ngram] += 1
     return (len(words), counts)
 
-def cook_refs(refs, eff=None, n=4): ## lhuang: oracle will call with "average"
-    '''Takes a list of reference sentences for a single segment
-    and returns an object that encapsulates everything that BLEU
-    needs to know about them.'''
 
+def cook_refs(refs, eff=None, n=4):
+    """
+    Takes a list of reference sentences for a single segment
+    and returns an object that encapsulates everything that BLEU
+    needs to know about them.
+    :param refs:
+    :param eff:
+    :param n:
+    :return:
+    """
     reflen = []
     maxcounts = {}
     for ref in refs:
@@ -51,16 +64,18 @@ def cook_refs(refs, eff=None, n=4): ## lhuang: oracle will call with "average"
     elif eff == "average":
         reflen = float(sum(reflen))/len(reflen)
 
-    ## lhuang: N.B.: leave reflen computaiton to the very end!!
-    
-    ## lhuang: N.B.: in case of "closest", keep a list of reflens!! (bad design)
-
     return (reflen, maxcounts)
 
-def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
-    '''Takes a test sentence and returns an object that
-    encapsulates everything that BLEU needs to know about it.'''
 
+def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
+    """
+    Takes a test sentence and returns an object that
+    encapsulates everything that BLEU needs to know about it.
+    :param test:
+    :param eff:
+    :param n:
+    :return:
+    """
     testlen, counts = precook(test, n, True)
 
     result = {}
@@ -69,7 +84,7 @@ def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
     
     if eff == "closest":
         result["reflen"] = min((abs(l-testlen), l) for l in reflen)[1]
-    else: ## i.e., "average" or "shortest" or None
+    else:
         result["reflen"] = reflen
 
     result["testlen"] = testlen
@@ -82,15 +97,19 @@ def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
 
     return result
 
-class BleuScorer(object):
-    """Bleu scorer.
-    """
 
+class BleuScorer(object):
+    """
+    Bleu scorer.
+    """
     __slots__ = "n", "crefs", "ctest", "_score", "_ratio", "_testlen", "_reflen", "special_reflen"
     # special_reflen is used in oracle (proportional effective ref len for a node).
 
     def copy(self):
-        ''' copy the refs.'''
+        """
+        copy the refs.
+        :return:
+        """
         new = BleuScorer(n=self.n)
         new.ctest = copy.copy(self.ctest)
         new.crefs = copy.copy(self.crefs)
@@ -98,8 +117,13 @@ class BleuScorer(object):
         return new
 
     def __init__(self, test=None, refs=None, n=4, special_reflen=None):
-        ''' singular instance '''
-
+        """
+        singular instance
+        :param test:
+        :param refs:
+        :param n:
+        :param special_reflen:
+        """
         self.n = n
         self.crefs = []
         self.ctest = []
@@ -107,38 +131,71 @@ class BleuScorer(object):
         self.special_reflen = special_reflen
 
     def cook_append(self, test, refs):
-        '''called by constructor and __iadd__ to avoid creating new instances.'''
-        
+        """
+        called by constructor and __iadd__ to avoid creating new instances.
+        :param test:
+        :param refs:
+        :return:
+        """
         if refs is not None:
             self.crefs.append(cook_refs(refs))
             if test is not None:
                 cooked_test = cook_test(test, self.crefs[-1])
-                self.ctest.append(cooked_test) ## N.B.: -1
+                self.ctest.append(cooked_test)  # N.B.: -1
             else:
-                self.ctest.append(None) # lens of crefs and ctest have to match
+                self.ctest.append(None)  # lens of crefs and ctest have to match
 
-        self._score = None ## need to recompute
+        self._score = None  # need to recompute
 
     def ratio(self, option=None):
+        """
+
+        :param option:
+        :return:
+        """
         self.compute_score(option=option)
         return self._ratio
 
     def score_ratio(self, option=None):
-        '''return (bleu, len_ratio) pair'''
-        return (self.fscore(option=option), self.ratio(option=option))
+        """
+        return (bleu, len_ratio) pair
+        :param option:
+        :return:
+        """
+        return self.fscore(option=option), self.ratio(option=option)
 
     def score_ratio_str(self, option=None):
+        """
+
+        :param option:
+        :return:
+        """
         return "%.4f (%.2f)" % self.score_ratio(option)
 
     def reflen(self, option=None):
+        """
+
+        :param option:
+        :return:
+        """
         self.compute_score(option=option)
         return self._reflen
 
     def testlen(self, option=None):
+        """
+
+        :param option:
+        :return:
+        """
         self.compute_score(option=option)
         return self._testlen        
 
     def retest(self, new_test):
+        """
+
+        :param new_test:
+        :return:
+        """
         if type(new_test) is str:
             new_test = [new_test]
         assert len(new_test) == len(self.crefs), new_test
@@ -150,16 +207,27 @@ class BleuScorer(object):
         return self
 
     def rescore(self, new_test):
-        ''' replace test(s) with new test(s), and returns the new score.'''
-        
+        """
+        replace test(s) with new test(s), and returns the new score.
+        :param new_test:
+        :return:
+        """
         return self.retest(new_test).compute_score()
 
     def size(self):
+        """
+
+        :return:
+        """
         assert len(self.crefs) == len(self.ctest), "refs/test mismatch! %d<>%d" % (len(self.crefs), len(self.ctest))
         return len(self.crefs)
 
     def __iadd__(self, other):
-        '''add an instance (e.g., from another sentence).'''
+        """
+        add an instance (e.g., from another sentence).
+        :param other:
+        :return:
+        """
 
         if type(other) is tuple:
             ## avoid creating new BleuScorer instances
@@ -173,13 +241,29 @@ class BleuScorer(object):
         return self        
 
     def compatible(self, other):
+        """
+
+        :param other:
+        :return:
+        """
         return isinstance(other, BleuScorer) and self.n == other.n
 
     def single_reflen(self, option="average"):
+        """
+
+        :param option:
+        :return:
+        """
         return self._single_reflen(self.crefs[0][0], option)
 
     def _single_reflen(self, reflens, option=None, testlen=None):
-        
+        """
+
+        :param reflens:
+        :param option:
+        :param testlen:
+        :return:
+        """
         if option == "shortest":
             reflen = min(reflens)
         elif option == "average":
@@ -192,13 +276,25 @@ class BleuScorer(object):
         return reflen
 
     def recompute_score(self, option=None, verbose=0):
+        """
+
+        :param option:
+        :param verbose:
+        :return:
+        """
         self._score = None
         return self.compute_score(option, verbose)
         
     def compute_score(self, option=None, verbose=0):
+        """
+
+        :param option:
+        :param verbose:
+        :return:
+        """
         n = self.n
         small = 1e-9
-        tiny = 1e-15 ## so that if guess is 0 still return 0
+        tiny = 1e-15  # so that if guess is 0 still return 0
         bleu_list = [[] for _ in range(n)]
 
         if self._score is not None:
@@ -216,7 +312,7 @@ class BleuScorer(object):
             testlen = comps['testlen']
             self._testlen += testlen
 
-            if self.special_reflen is None: ## need computation
+            if self.special_reflen is None:  # need computation
                 reflen = self._single_reflen(comps['reflen'], option, testlen)
             else:
                 reflen = self.special_reflen
@@ -233,7 +329,7 @@ class BleuScorer(object):
                 bleu *= (float(comps['correct'][k]) + tiny) \
                         /(float(comps['guess'][k]) + small) 
                 bleu_list[k].append(bleu ** (1./(k+1)))
-            ratio = (testlen + tiny) / (reflen + small) ## N.B.: avoid zero division
+            ratio = (testlen + tiny) / (reflen + small)  # N.B.: avoid zero division
             if ratio < 1:
                 for k in xrange(n):
                     bleu_list[k][-1] *= math.exp(1 - 1/ratio)
@@ -250,7 +346,7 @@ class BleuScorer(object):
             bleu *= float(totalcomps['correct'][k] + tiny) \
                     / (totalcomps['guess'][k] + small)
             bleus.append(bleu ** (1./(k+1)))
-        ratio = (self._testlen + tiny) / (self._reflen + small) ## N.B.: avoid zero division
+        ratio = (self._testlen + tiny) / (self._reflen + small)  # N.B.: avoid zero division
         if ratio < 1:
             for k in xrange(n):
                 bleus[k] *= math.exp(1 - 1/ratio)
