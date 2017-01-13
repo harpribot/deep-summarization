@@ -87,11 +87,8 @@ class NeuralNet:
         """
         # start the tensorflow session
         ops.reset_default_graph()
-        # assign efficient allocator
-        config = tf.ConfigProto()
-        config.gpu_options.allocator_type = 'BFC'
         # initialize interactive session
-        self.sess = tf.InteractiveSession(config=config)
+        self.sess = tf.Session()
 
     def form_model_graph(self):
         """
