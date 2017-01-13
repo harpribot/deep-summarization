@@ -1,4 +1,5 @@
 # Deep Summarization
+**NOTE - The codebase is still not compatible. I am getting issues, and am working to get this up and running. Stay Tuned.**
 Uses Recurrent Neural Network (LSTM and GRU units) for developing Seq2Seq Encoder Decoded model with and without attention mechanism for summarization of amazon food reviews into abstractive tips.
 
 ## Contents
