@@ -1,0 +1,12 @@
+cvxopt==1.1.8
+matplotlib==1.5.1
+nltk==3.2.1
+numpy==1.11.0
+pandas==0.18.0
+prettytensor==0.6.2
+pytest==2.8.1
+python-dateutil==2.4.2
+scipy==0.17.0
+six==1.10.0
+tensorflow==0.12.0rc0
+virtualenv==15.0.3

@@ -1,5 +1,3 @@
-import numpy as np
-import os
 import glob
 import cPickle as pickle
 import os
