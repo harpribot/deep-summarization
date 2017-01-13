@@ -1,4 +1,3 @@
-import numpy as np
 from helpers.extracter import Spider
 
 inputfile = 'raw_data/foods.txt'
