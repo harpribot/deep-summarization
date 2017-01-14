@@ -1,79 +1,66 @@
 from tensorflow.python.framework import ops
 import tensorflow as tf
 import numpy as np
-from helpers.data2tensor import Mapper
 import pandas as pd
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
 
-class NeuralNet:
-    def __init__(self, review_summary_file, checkpointer, attention=False):
+class NeuralNet(object):
+    __metaclass__ = ABCMeta
+
+    def __init__(self):
         """
+        Seq2Seq Neural Network
 
-        :param review_summary_file:
-        :param checkpointer:
-        :param attention:
+        This is an abstract class and can't be called directly.
         """
-        # Set attention flag
-        self.attention = attention
-        # Store the provided checkpoint (if any)
-        self.checkpointer = checkpointer
-        # Get the input labels and output review
-        self.review_summary_file = review_summary_file
-        self.__load_data()
-
-        # Load all the parameters
-        self.__load_model_params()
-        self.sess = None
-
-        # Testing parameters
-        self.test_review = None
-        self.predicted_test_summary = None
-        self.true_summary = None
-        self.test_size = None
+        # parameters
         self.train_batch_size = None
         self.test_batch_size = None
         self.memory_dim = None
         self.learning_rate = None
+        self.saver = None
+        self.sess = None
+        self.test_size = self.test_size
+        self.checkpointer = self.checkpointer
+        self.mapper_dict = self.mapper_dict
+        self.test_review = self.test_review
+        self.true_summary = self.true_summary
+        self.predicted_test_summary = self.predicted_test_summary
+
+        # Load all the parameters
+        self._load_model_params()
 
     def set_parameters(self, train_batch_size, test_batch_size, memory_dim, learning_rate):
         """
-
-        :param train_batch_size:
-        :param test_batch_size:
-        :param memory_dim:
-        :param learning_rate:
-        :return:
+        Set the parameters for the model and training.
+        :param train_batch_size: The batch size of examples used for batch training
+        :param test_batch_size: The batch size of test examples used for testing
+        :param memory_dim: The length of the hidden vector produced by the encoder
+        :param learning_rate: The learning rate for Stochastic Gradient Descent
+        :return: None
         """
         self.train_batch_size = train_batch_size
         self.test_batch_size = test_batch_size
         self.memory_dim = memory_dim
         self.learning_rate = learning_rate
 
-    def __load_data(self):
-        """
-        Load data only if the present data is not checkpointed, else, just load the checkpointed data
-        :return:
-        """
-        self.mapper = Mapper()
-        self.mapper.generate_vocabulary(self.review_summary_file)
-        self.X_fwd, self.X_bwd, self.Y = self.mapper.get_tensor(reverseflag=True)
-        # Store all the mapper values in a dict for later recovery
-        self.mapper_dict = dict()
-        self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
-        self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
-        self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
-        # Split into test and train data
-        self.__split_train_tst()
-
     @abstractmethod
-    def __split_train_tst(self):
+    def _load_data(self):
         pass
 
-    def __load_model_params(self):
-        """
+    @abstractmethod
+    def _split_train_tst(self):
+        pass
 
-        :return:
+    def _load_model_params(self):
+        """
+        Load model parameters
+
+        self.seq_length -> The length of the input sequence (Length of input sentence fed to the encoder-decoder model)
+        self.vocab_size -> The size of the data vocabulary
+        self.momentum -> The momentum parameter in the update rule for SGD
+        :return: None
         """
         # parameters
         self.seq_length = self.mapper_dict['seq_length']
@@ -82,8 +69,8 @@ class NeuralNet:
 
     def begin_session(self):
         """
-
-        :return:
+        Begins the session
+        :return: None
         """
         # start the tensorflow session
         ops.reset_default_graph()
@@ -92,34 +79,35 @@ class NeuralNet:
 
     def form_model_graph(self):
         """
-
-        :return:
+        Creates the data graph, loads the model and optimizer and then starts the session.
+        :return: None
         """
-        self.__load_data_graph()
-        self.__load_model()
-        self.__load_optimizer()
-        self.__start_session()
+        self._load_data_graph()
+        self._load_model()
+        self._load_optimizer()
+        self._start_session()
 
     @abstractmethod
-    def __load_data_graph(self):
+    def _load_data_graph(self):
         pass
 
     @abstractmethod
-    def __load_model(self):
+    def _load_model(self):
         pass
 
     @abstractmethod
-    def __load_optimizer(self):
+    def _load_optimizer(self):
         pass
 
-    def __start_session(self):
+    def _start_session(self):
         """
-
-        :return:
+        Starts the Tensorflow Session
+        :return: None
         """
         self.sess.run(tf.global_variables_initializer())
         # initialize the saver node
-        self.saver = tf.train.Saver()
+        # print tf.GraphKeys.GLOBAL_VARIABLES
+        self.saver = tf.train.Saver(tf.global_variables())
         # get the latest checkpoint
         last_checkpoint_path = self.checkpointer.get_last_checkpoint()
         if last_checkpoint_path is not None:
@@ -132,13 +120,13 @@ class NeuralNet:
     def fit(self):
         pass
 
-    def __index2sentence(self, list_):
+    def _index2sentence(self, list_):
         """
-
-        :param list_:
-        :return:
+        Converts the indexed sentence to the actual sentence
+        :param list_: The list of the index of the words in the output sentence (in order)
+        :return: Output Sentence [String]
         """
-        rev_map = self.mapper_dict['rev_map']
+        rev_map = self.mapper_dict['rev_map']  # rev_map is reverse mapping from index in vocabulary to actual word
         sentence = ""
         for entry in list_:
             if entry != 0:
@@ -148,9 +136,9 @@ class NeuralNet:
 
     def store_test_predictions(self, prediction_id='_final'):
         """
-
-        :param prediction_id:
-        :return:
+        Stores the test predictions in a CSV file
+        :param prediction_id: A simple id appended to the name of the summary for uniqueness
+        :return: None
         """
         # prediction id is usually the step count
         print 'Storing predictions on Test Data...'
@@ -159,10 +147,10 @@ class NeuralNet:
         generated_summary = []
         for i in range(self.test_size):
             if not self.checkpointer.is_output_file_present():
-                review.append(self.__index2sentence(self.test_review[i]))
-                true_summary.append(self.__index2sentence(self.true_summary[i]))
+                review.append(self._index2sentence(self.test_review[i]))
+                true_summary.append(self._index2sentence(self.true_summary[i]))
             if i < (self.test_batch_size * (self.test_size // self.test_batch_size)):
-                generated_summary.append(self.__index2sentence(self.predicted_test_summary[i]))
+                generated_summary.append(self._index2sentence(self.predicted_test_summary[i]))
             else:
                 generated_summary.append('')
 
@@ -180,10 +168,3 @@ class NeuralNet:
         if prediction_id == '_final':
             print 'All done. Exiting..'
             print 'Exited'
-
-    def close_session(self):
-        """
-
-        :return:
-        """
-        self.sess.close()

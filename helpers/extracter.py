@@ -5,8 +5,8 @@ import pandas as pd
 class Spider:
     def __init__(self,num_reviews):
         """
-
-        :param num_reviews:
+        Simple Spider to crawl the JSON script dataset and load reviews and summary
+        :param num_reviews: Number of (review, summary) samples to be extracted
         """
         self.num_reviews = num_reviews
         self.raw_data_file = None
@@ -14,9 +14,9 @@ class Spider:
 
     def crawl_for_reviews_and_summary(self, input_file):
         """
-
-        :param input_file:
-        :return:
+        Crawl the input dataset
+        :param input_file: The location of the file containing the txt file dataset
+        :return: None
         """
         self.raw_data_file = input_file
         self.df = pd.DataFrame()
@@ -25,8 +25,8 @@ class Spider:
 
     def __crawl_review(self):
         """
-
-        :return:
+        Crawl review
+        :return: review [numpy array]
         """
         review_list = []
         print 'Crawling Reviews....'
@@ -44,8 +44,8 @@ class Spider:
 
     def __crawl_summary(self):
         """
-
-        :return:
+        Crawl summary
+        :return: summary [numpy array]
         """
         summary_list = []
         print 'Crawling Summary....'
@@ -63,8 +63,8 @@ class Spider:
 
     def save_review_summary_frame(self, output_file):
         """
-
-        :param output_file:
-        :return:
+        save (review, summary) pair in CSV file
+        :param output_file: The location where CSV file is to be saved.
+        :return: None
         """
         self.df.to_csv(output_file, index=False)

@@ -1,35 +1,63 @@
 import tensorflow as tf
 from models.sequenceNet import NeuralNet
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 import cPickle as Pickle
 import numpy as np
 import random
+from helpers.data2tensor import Mapper
 
 
 class Simple(NeuralNet):
+    __metaclass__ = ABCMeta
+
     def __init__(self, review_summary_file, checkpointer, attention=False):
         """
-
-        :param review_summary_file:
-        :param checkpointer:
-        :param attention:
+        A Simple (Unidirectional, One Layer) Seq2Seq Encoder-Decoder model
+        :param review_summary_file: The file containing the (food review, target tip summary) pair in CSV format
+        :param checkpointer: The checkpoint handling object [Object]
+        :param attention: True, if attention mechanism is to be implemented, else False. Default: False
         """
-        NeuralNet.__init__(self, review_summary_file, checkpointer, attention)
+        self.test_review = None
+        self.predicted_test_summary = None
+        self.true_summary = None
+        self.train_size = None
+        self.test_size = None
+        self.X = None
+        self.Y = None
+        self.prev_mem = None
+        self.cell = None
+        self.dec_outputs = None
+        self.dec_memory = None
+        self.labels = None
+        self.loss = None
+        self.weights = None
+        self.optimizer = None
+        self.train_op = None
+        self.mapper_dict = None
+        self.seq_length = None
+        self.vocab_size = None
+        self.momentum = None
+
+        self.attention = attention
+        self.review_summary_file = review_summary_file
+        self.checkpointer = checkpointer
+
+        self.enc_inp = None
+        self.dec_inp = None
+
+        self._load_data()
+        super(Simple, self).__init__()
 
     @abstractmethod
     def get_cell(self):
-        """
-
-        :return:
-        """
         pass
 
-    def __split_train_tst(self):
+    def _split_train_tst(self):
         """
         divide the data into training and testing data
         Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst_fwd
         Note that only the reviews are changed, and not the summary.
-        :return:
+        :return: None
         """
 
         num_samples = self.Y.shape[0]
@@ -60,19 +88,34 @@ class Simple(NeuralNet):
         self.Y_trn = self.Y[0:self.train_size]
         self.Y_tst = self.Y[self.train_size:num_samples]
 
-    def __load_data_graph(self):
+    def _load_data(self):
         """
+        Load data only if the present data is not checkpointed, else, just load the checkpointed data
+        :return: None
+        """
+        self.mapper = Mapper()
+        self.mapper.generate_vocabulary(self.review_summary_file)
+        self.X, self.Y = self.mapper.get_tensor()
+        # Store all the mapper values in a dict for later recovery
+        self.mapper_dict = dict()
+        self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
+        self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
+        self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
+        # Split into test and train data
+        self._split_train_tst()
 
-        :return:
+    def _load_data_graph(self):
+        """
+        Loads the data graph consisting of the encoder and decoder input placeholders, Label (Target tip summary)
+        placeholders and the weights of the hidden layer of the Seq2Seq model.
+        :return: None
         """
         # input
         with tf.variable_scope("train_test", reuse=True):
-            self.enc_inp = [tf.placeholder(tf.int32, shape=(None,),
-                                           name="input%i" % t)
+            self.enc_inp = [tf.placeholder(tf.int32, shape=(None,), name="input%i" % t)
                             for t in range(self.seq_length)]
             # desired output
-            self.labels = [tf.placeholder(tf.int32, shape=(None,),
-                                          name="labels%i" % t)
+            self.labels = [tf.placeholder(tf.int32, shape=(None,), name="labels%i" % t)
                            for t in range(self.seq_length)]
             # weight of the hidden layer
             self.weights = [tf.ones_like(labels_t, dtype=tf.float32)
@@ -80,20 +123,19 @@ class Simple(NeuralNet):
 
             # Decoder input: prepend some "GO" token and drop the final
             # token of the encoder input
-            self.dec_inp = ([tf.zeros_like(self.labels[0], dtype=np.int32, name="GO")]
-                            + self.labels[:-1])
+            self.dec_inp = ([tf.zeros_like(self.labels[0], dtype=np.int32, name="GO")] + self.labels[:-1])
 
-    def __load_model(self):
+    def _load_model(self):
         """
-
-        :return:
+        Creates the encoder decoder model
+        :return: None
         """
         # Initial memory value for recurrence.
         self.prev_mem = tf.zeros((self.train_batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("train_test", reuse=True):
-            self.cell = self.get_cell
+            self.cell = self.get_cell()
 
         # embedding model
         if not self.attention:
@@ -116,24 +158,23 @@ class Simple(NeuralNet):
                                 self.enc_inp, self.dec_inp, self.cell,
                                 self.vocab_size, self.vocab_size, self.seq_length, feed_previous=True)
 
-    def __load_optimizer(self):
+    def _load_optimizer(self):
         """
-
-        :return:
+        Load the SGD optimizer
+        :return: None
         """
         # loss function
         self.loss = tf.nn.seq2seq.sequence_loss(self.dec_outputs, self.labels, self.weights, self.vocab_size)
 
         # optimizer
-        # self.optimizer = tf.train.MomentumOptimizer(self.learning_rate,
-        #                                            self.momentum)
+        # self.optimizer = tf.train.MomentumOptimizer(self.learning_rate, self.momentum)
         self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
         self.train_op = self.optimizer.minimize(self.loss)
 
     def fit(self):
         """
-
-        :return:
+        Train the model with the training data
+        :return: None
         """
         # Iterate and train.
         step_file = self.checkpointer.get_step_file()
@@ -153,16 +194,16 @@ class Simple(NeuralNet):
             batch_data = self.X_trn[offset:(offset + self.train_batch_size), :].T
             batch_labels = self.Y_trn[offset:(offset + self.train_batch_size), :].T
 
-            loss_t = self.__train_batch(batch_data, batch_labels)
+            loss_t = self._train_batch(batch_data, batch_labels)
             print "Present Loss:", loss_t
 
             # check results on 2 tasks - Visual Validation
             print 'Train Data Validation\n'
-            self.__visual_validate(self.X_trn[301, :], self.Y_trn[301, :])
+            self._visual_validate(self.X_trn[301, :], self.Y_trn[301, :])
             print
             print
             print 'Test Data Validation\n'
-            self.__visual_validate(self.X_tst[56, :], self.Y_tst[56, :])
+            self._visual_validate(self.X_tst[56, :], self.Y_tst[56, :])
             print
             print
 
@@ -174,12 +215,12 @@ class Simple(NeuralNet):
                 self.store_test_predictions('_' + str(step))
             '''
 
-    def __train_batch(self, review, summary):
+    def _train_batch(self, review, summary):
         """
-
-        :param review: shape[seq_length x batch_length]
-        :param summary: shape[seq_length x batch_length]
-        :return:
+        Train a batch of the data
+        :param review: The input review data (X) shape[seq_length x batch_length]
+        :param summary: The target tip data (Y) shape[seq_length x batch_length]
+        :return: None
         """
         # feed in the data
         feed_dict = {self.enc_inp[t]: review[t] for t in range(self.seq_length)}
@@ -189,54 +230,54 @@ class Simple(NeuralNet):
         _, loss_t = self.sess.run([self.train_op, self.loss], feed_dict)
         return loss_t
 
-    def __visual_validate(self, review, true_summary):
+    def _visual_validate(self, review, true_summary):
         """
-
-        :param review:
-        :param true_summary:
-        :return:
+        Validate Result and display them on a sample
+        :param review: The input review sentence
+        :param true_summary: The true summary (target)
+        :return: None
         """
         # review
         print 'Original Review'
-        print self.__index2sentence(review)
+        print self._index2sentence(review)
         print
         # True summary
         print 'True Summary'
-        print self.__index2sentence(true_summary)
+        print self._index2sentence(true_summary)
         print
         # Generated Summary
         rev_out = self.generate_one_summary(review)
         print 'Generated Summary'
-        print self.__index2sentence(rev_out)
+        print self._index2sentence(rev_out)
         print
 
-    def generate_one_summary(self, rev):
+    def generate_one_summary(self, review):
         """
-
-        :param rev:
-        :return:
+        Create summary for one review using Encoder Decoder Seq2Seq model
+        :param review: The input review
+        :return: Output Summary of the model
         """
-        rev = rev.T
-        rev = [np.array([int(x)]) for x in rev]
-        feed_dict_rev = {self.enc_inp[t]: rev[t] for t in range(self.seq_length)}
-        feed_dict_rev.update({self.labels[t]: rev[t] for t in range(self.seq_length)})
-        rev_out = self.sess.run(self.dec_outputs_tst, feed_dict_rev)
-        rev_out = [logits_t.argmax(axis=1) for logits_t in rev_out]
-        rev_out = [x[0] for x in rev_out]
+        review = review.T
+        review = [np.array([int(x)]) for x in review]
+        feed_dict_rev = {self.enc_inp[t]: review[t] for t in range(self.seq_length)}
+        feed_dict_rev.update({self.labels[t]: review[t] for t in range(self.seq_length)})
+        summary = self.sess.run(self.dec_outputs_tst, feed_dict_rev)
+        summary = [logits_t.argmax(axis=1) for logits_t in summary]
+        summary = [x[0] for x in summary]
 
-        return rev_out
+        return summary
 
     def predict(self):
         """
-
-        :return:
+        Make test time predictions of summary
+        :return: None
         """
         self.predicted_test_summary = []
         for step in xrange(0, self.test_size // self.test_batch_size):
             print 'Predicting Batch No.:', step
             offset = (step * self.test_batch_size) % self.test_size
             batch_data = self.X_tst[offset:(offset + self.test_batch_size), :].T
-            summary_test_out = self.__predict_batch(batch_data)
+            summary_test_out = self._predict_batch(batch_data)
             self.predicted_test_summary.extend(summary_test_out)
 
         print 'Prediction Complete. Moving Forward..'
@@ -246,11 +287,11 @@ class Simple(NeuralNet):
         self.predicted_test_summary = self.predicted_test_summary
         self.true_summary = self.Y_tst
 
-    def __predict_batch(self, review):
+    def _predict_batch(self, review):
         """
-
-        :param review:
-        :return:
+        Predict test reviews in batches
+        :param review: Input review batch
+        :return: None
         """
         summary_out = []
         feed_dict_test = {self.enc_inp[t]: review[t] for t in range(self.seq_length)}

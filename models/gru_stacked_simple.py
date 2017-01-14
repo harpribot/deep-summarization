@@ -8,14 +8,15 @@ class GruStackedSimple(StackedSimple):
 
         :param review_summary_file:
         :param checkpointer:
+        :param num_layers:
         :param attention:
         """
         self.num_layers = num_layers
-        StackedSimple.__init__(self, review_summary_file, checkpointer, attention)
+        super(GruStackedSimple, self).__init__(review_summary_file, checkpointer, num_layers, attention)
 
     def get_cell(self):
         """
-
-        :return:
+        Return the atomic RNN cell type used for this model
+        :return: The atomic RNN Cell
         """
         return tf.nn.rnn_cell.GRUCell(self.memory_dim)

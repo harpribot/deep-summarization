@@ -4,33 +4,61 @@ from abc import abstractmethod
 import cPickle as Pickle
 import numpy as np
 import random
+from helpers.data2tensor import Mapper
 
 
 class StackedBidirectional(NeuralNet):
     def __init__(self, review_summary_file, checkpointer, num_layers, attention=False):
         """
-
-        :param review_summary_file:
-        :param checkpointer:
-        :param attention:
+        A  Stacked Bidirectional ([Forward + Backward direction], Many Layers) Seq2Seq Encoder-Decoder model
+        :param review_summary_file: The file containing the (food review, target tip summary) pair in CSV format
+        :param checkpointer: The checkpoint handling object [Object]
+        :param num_layers: Number of stack layers
+        :param attention: True, if attention mechanism is to be implemented, else False. Default: False
         """
+        self.test_review = None
+        self.predicted_test_summary = None
+        self.true_summary = None
+        self.train_size = None
+        self.test_size = None
+        self.X_fwd = None
+        self.X_bwd = None
+        self.Y = None
+        self.prev_mem = None
+        self.cell = None
+        self.dec_outputs = None
+        self.dec_memory = None
+        self.labels = None
+        self.loss = None
+        self.weights = None
+        self.optimizer = None
+        self.train_op = None
+        self.mapper_dict = None
+        self.seq_length = None
+        self.vocab_size = None
+        self.momentum = None
+
+        self.attention = attention
+        self.review_summary_file = review_summary_file
+        self.checkpointer = checkpointer
         self.num_layers = num_layers
-        NeuralNet.__init__(self, review_summary_file, checkpointer, attention)
+
+        self.enc_inp = None
+        self.dec_inp = None
+
+        self._load_data()
+        super(StackedBidirectional, self).__init__()
 
     @abstractmethod
     def get_cell(self):
-        """
-
-        :return:
-        """
         pass
 
-    def __split_train_tst(self):
+    def _split_train_tst(self):
         """
         divide the data into training and testing data
-        Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst_fwd
+        Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst
         Note that only the reviews are changed, and not the summary.
-        :return:
+        :return: None
         """
         num_samples = self.Y.shape[0]
         mapper_file = self.checkpointer.get_mapper_file_location()
@@ -64,10 +92,27 @@ class StackedBidirectional(NeuralNet):
         self.Y_trn = self.Y[0:self.train_size]
         self.Y_tst = self.Y[self.train_size:num_samples]
 
-    def __load_data_graph(self):
+    def _load_data(self):
         """
+        Load data only if the present data is not checkpointed, else, just load the checkpointed data
+        :return: None
+        """
+        self.mapper = Mapper()
+        self.mapper.generate_vocabulary(self.review_summary_file)
+        self.X_fwd, self.X_bwd, self.Y = self.mapper.get_tensor(reverseflag=True)
+        # Store all the mapper values in a dict for later recovery
+        self.mapper_dict = dict()
+        self.mapper_dict['seq_length'] = self.mapper.get_seq_length()
+        self.mapper_dict['vocab_size'] = self.mapper.get_vocabulary_size()
+        self.mapper_dict['rev_map'] = self.mapper.get_reverse_map()
+        # Split into test and train data
+        self._split_train_tst()
 
-        :return:
+    def _load_data_graph(self):
+        """
+        Loads the data graph consisting of the encoder and decoder input placeholders, Label (Target tip summary)
+        placeholders and the weights of the hidden layer of the Seq2Seq model.
+        :return: None
         """
         # input
         with tf.variable_scope("train_test", reuse=True):
@@ -87,22 +132,22 @@ class StackedBidirectional(NeuralNet):
             # token of the encoder input
             self.dec_inp = ([tf.zeros_like(self.labels[0], dtype=np.int32, name="GO")] + self.labels[:-1])
 
-    def __load_model(self):
+    def _load_model(self):
         """
-
-        :return:
+        Creates the encoder decoder model
+        :return: None
         """
         # Initial memory value for recurrence.
         self.prev_mem = tf.zeros((self.train_batch_size, self.memory_dim))
 
         # choose RNN/GRU/LSTM cell
         with tf.variable_scope("forward"):
-            fw_single_cell = self.get_cell
+            fw_single_cell = self.get_cell()
             # Stacks layers of RNN's to form a stacked decoder
             self.forward_cell = tf.nn.rnn_cell.MultiRNNCell([fw_single_cell] * self.num_layers)
 
         with tf.variable_scope("backward"):
-            bw_single_cell = self.get_cell
+            bw_single_cell = self.get_cell()
             # Stacks layers of RNN's to form a stacked decoder
             self.backward_cell = tf.nn.rnn_cell.MultiRNNCell([bw_single_cell] * self.num_layers)
 
@@ -147,10 +192,10 @@ class StackedBidirectional(NeuralNet):
                                 self.enc_inp_bwd, self.dec_inp, self.backward_cell,
                                 self.vocab_size, self.vocab_size, self.seq_length, feed_previous=True)
 
-    def __load_optimizer(self):
+    def _load_optimizer(self):
         """
-
-        :return:
+        Load the SGD optimizer
+        :return: None
         """
         # loss function
         with tf.variable_scope("forward"):
@@ -171,8 +216,8 @@ class StackedBidirectional(NeuralNet):
 
     def fit(self):
         """
-
-        :return:
+        Train the model with the training data
+        :return: None
         """
         # Iterate and train.
         step_file = self.checkpointer.get_step_file()
@@ -193,17 +238,17 @@ class StackedBidirectional(NeuralNet):
             batch_data_bwd = self.X_trn_bwd[offset:(offset + self.train_batch_size), :].T
             batch_labels = self.Y_trn[offset:(offset + self.train_batch_size), :].T
 
-            loss_t_forward, loss_t_backward = self.__train_batch(batch_data_fwd, batch_data_bwd, batch_labels)
+            loss_t_forward, loss_t_backward = self._train_batch(batch_data_fwd, batch_data_bwd, batch_labels)
             print "Present Loss Forward:", loss_t_forward
             print "Present Loss Backward:", loss_t_backward
 
             # check results on 2 tasks - Visual Validation
             print 'Train Data Validation\n'
-            self.__visual_validate(self.X_trn_fwd[301, :], self.X_trn_bwd[301, :], self.Y_trn[301, :])
+            self._visual_validate(self.X_trn_fwd[301, :], self.X_trn_bwd[301, :], self.Y_trn[301, :])
             print
             print
             print 'Test Data Validation\n'
-            self.__visual_validate(self.X_tst_fwd[56, :], self.X_tst_bwd[56, :], self.Y_tst[56, :])
+            self._visual_validate(self.X_tst_fwd[56, :], self.X_tst_bwd[56, :], self.Y_tst[56, :])
             print
             print
 
@@ -215,13 +260,12 @@ class StackedBidirectional(NeuralNet):
                 self.store_test_predictions('_' + str(step))
             '''
 
-    def __train_batch(self, review_fwd, review_bwd, summary):
+    def _train_batch(self, review_fwd, review_bwd, summary):
         """
-
-        :param review_fwd: shape[seq_length x batch_length]
-        :param review_bwd: shape[seq_length x batch_length]
-        :param summary: shape[seq_length x batch_length]
-        :return:
+        Train a batch of the data
+        :param review: The input review data (X) shape[seq_length x batch_length]
+        :param summary: The target tip data (Y) shape[seq_length x batch_length]
+        :return: None
         """
         # feed in the data for forward model
         feed_dict_fwd = {self.enc_inp_fwd[t]: review_fwd[t] for t in range(self.seq_length)}
@@ -241,34 +285,33 @@ class StackedBidirectional(NeuralNet):
 
         return loss_t_forward, loss_t_backward
 
-    def __visual_validate(self, review_fwd, review_bwd, true_summary):
+    def _visual_validate(self, review_fwd, review_bwd, true_summary):
         """
-
-        :param review_fwd:
-        :param review_bwd:
-        :param true_summary:
-        :return:
+        Validate Result and display them on a sample
+        :param review: The input review sentence
+        :param true_summary: The true summary (target)
+        :return: None
         """
         # review
         print 'Original Review'
-        print self.__index2sentence(review_fwd)
+        print self._index2sentence(review_fwd)
         print
         # True summary
         print 'True Summary'
-        print self.__index2sentence(true_summary)
+        print self._index2sentence(true_summary)
         print
         # Generated Summary
         summary_out = self.generate_one_summary(review_fwd, review_bwd)
         print 'Generated Summary'
-        print self.__index2sentence(summary_out)
+        print self._index2sentence(summary_out)
         print
 
     def generate_one_summary(self, review_fwd, review_bwd):
         """
-
-        :param review_fwd:
-        :param review_bwd:
-        :return:
+        Create summary for one review using Encoder Decoder Seq2Seq model
+        :param review_fwd: The input review for forward direction model
+        :param review_bwd: The input review for backward direction model
+        :return: Output Summary of the model
         """
         review_fwd = review_fwd.T
         review_bwd = review_bwd.T
@@ -293,8 +336,8 @@ class StackedBidirectional(NeuralNet):
 
     def predict(self):
         """
-
-        :return:
+        Make test time predictions of summary
+        :return: None
         """
         self.predicted_test_summary = []
         for step in xrange(0, self.test_size // self.test_batch_size):
@@ -302,7 +345,7 @@ class StackedBidirectional(NeuralNet):
             offset = (step * self.test_batch_size) % self.test_size
             batch_data_fwd = self.X_tst_fwd[offset:(offset + self.test_batch_size), :].T
             batch_data_bwd = self.X_tst_bwd[offset:(offset + self.test_batch_size), :].T
-            summary_test_out = self.__predict_batch(batch_data_fwd, batch_data_bwd)
+            summary_test_out = self._predict_batch(batch_data_fwd, batch_data_bwd)
             self.predicted_test_summary.extend(summary_test_out)
 
         print 'Prediction Complete. Moving Forward..'
@@ -312,12 +355,12 @@ class StackedBidirectional(NeuralNet):
         self.predicted_test_summary = self.predicted_test_summary
         self.true_summary = self.Y_tst
 
-    def __predict_batch(self, review_fwd, review_bwd):
+    def _predict_batch(self, review_fwd, review_bwd):
         """
-
-        :param review_fwd:
-        :param review_bwd:
-        :return:
+        Predict test reviews in batches
+        :param review_fwd: Input review batch for forward propagation model
+        :param review_bwd: Input review batch for backward propagation model
+        :return: None
         """
         summary_out = []
         # Forward
