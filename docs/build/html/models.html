@@ -1,0 +1,630 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>models package &mdash; Deep Summarization 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Deep Summarization 1.0 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="models-package">
+<h1>models package<a class="headerlink" href="#models-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-models.bidirectional">
+<span id="models-bidirectional-module"></span><h2>models.bidirectional module<a class="headerlink" href="#module-models.bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.bidirectional.Bidirectional">
+<em class="property">class </em><code class="descclassname">models.bidirectional.</code><code class="descname">Bidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.bidirectional.Bidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.sequenceNet.NeuralNet" title="models.sequenceNet.NeuralNet"><code class="xref py py-class docutils literal"><span class="pre">models.sequenceNet.NeuralNet</span></code></a></p>
+<dl class="method">
+<dt id="models.bidirectional.Bidirectional.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.bidirectional.Bidirectional.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model with the training data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.bidirectional.Bidirectional.generate_one_summary">
+<code class="descname">generate_one_summary</code><span class="sig-paren">(</span><em>review_fwd</em>, <em>review_bwd</em><span class="sig-paren">)</span><a class="headerlink" href="#models.bidirectional.Bidirectional.generate_one_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create summary for one review using Encoder Decoder Seq2Seq model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>review_fwd</strong> &#8211; The input review for forward direction model</li>
+<li><strong>review_bwd</strong> &#8211; The input review for backward direction model</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Output Summary of the model</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.bidirectional.Bidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.bidirectional.Bidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="models.bidirectional.Bidirectional.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.bidirectional.Bidirectional.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test time predictions of summary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.gru_bidirectional">
+<span id="models-gru-bidirectional-module"></span><h2>models.gru_bidirectional module<a class="headerlink" href="#module-models.gru_bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.gru_bidirectional.GruBidirectional">
+<em class="property">class </em><code class="descclassname">models.gru_bidirectional.</code><code class="descname">GruBidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_bidirectional.GruBidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.bidirectional.Bidirectional" title="models.bidirectional.Bidirectional"><code class="xref py py-class docutils literal"><span class="pre">models.bidirectional.Bidirectional</span></code></a></p>
+<dl class="method">
+<dt id="models.gru_bidirectional.GruBidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_bidirectional.GruBidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.gru_simple">
+<span id="models-gru-simple-module"></span><h2>models.gru_simple module<a class="headerlink" href="#module-models.gru_simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.gru_simple.GruSimple">
+<em class="property">class </em><code class="descclassname">models.gru_simple.</code><code class="descname">GruSimple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_simple.GruSimple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.simple.Simple" title="models.simple.Simple"><code class="xref py py-class docutils literal"><span class="pre">models.simple.Simple</span></code></a></p>
+<dl class="method">
+<dt id="models.gru_simple.GruSimple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_simple.GruSimple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.gru_stacked_bidirectional">
+<span id="models-gru-stacked-bidirectional-module"></span><h2>models.gru_stacked_bidirectional module<a class="headerlink" href="#module-models.gru_stacked_bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.gru_stacked_bidirectional.GruStackedBidirectional">
+<em class="property">class </em><code class="descclassname">models.gru_stacked_bidirectional.</code><code class="descname">GruStackedBidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_stacked_bidirectional.GruStackedBidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.stacked_bidirectional.StackedBidirectional" title="models.stacked_bidirectional.StackedBidirectional"><code class="xref py py-class docutils literal"><span class="pre">models.stacked_bidirectional.StackedBidirectional</span></code></a></p>
+<dl class="method">
+<dt id="models.gru_stacked_bidirectional.GruStackedBidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_stacked_bidirectional.GruStackedBidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.gru_stacked_simple">
+<span id="models-gru-stacked-simple-module"></span><h2>models.gru_stacked_simple module<a class="headerlink" href="#module-models.gru_stacked_simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.gru_stacked_simple.GruStackedSimple">
+<em class="property">class </em><code class="descclassname">models.gru_stacked_simple.</code><code class="descname">GruStackedSimple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_stacked_simple.GruStackedSimple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.stacked_simple.StackedSimple" title="models.stacked_simple.StackedSimple"><code class="xref py py-class docutils literal"><span class="pre">models.stacked_simple.StackedSimple</span></code></a></p>
+<dl class="method">
+<dt id="models.gru_stacked_simple.GruStackedSimple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.gru_stacked_simple.GruStackedSimple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.lstm_bidirectional">
+<span id="models-lstm-bidirectional-module"></span><h2>models.lstm_bidirectional module<a class="headerlink" href="#module-models.lstm_bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.lstm_bidirectional.LstmBidirectional">
+<em class="property">class </em><code class="descclassname">models.lstm_bidirectional.</code><code class="descname">LstmBidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_bidirectional.LstmBidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.bidirectional.Bidirectional" title="models.bidirectional.Bidirectional"><code class="xref py py-class docutils literal"><span class="pre">models.bidirectional.Bidirectional</span></code></a></p>
+<dl class="method">
+<dt id="models.lstm_bidirectional.LstmBidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_bidirectional.LstmBidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.lstm_simple">
+<span id="models-lstm-simple-module"></span><h2>models.lstm_simple module<a class="headerlink" href="#module-models.lstm_simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.lstm_simple.LstmSimple">
+<em class="property">class </em><code class="descclassname">models.lstm_simple.</code><code class="descname">LstmSimple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_simple.LstmSimple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.simple.Simple" title="models.simple.Simple"><code class="xref py py-class docutils literal"><span class="pre">models.simple.Simple</span></code></a></p>
+<dl class="method">
+<dt id="models.lstm_simple.LstmSimple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_simple.LstmSimple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.lstm_stacked_bidirectional">
+<span id="models-lstm-stacked-bidirectional-module"></span><h2>models.lstm_stacked_bidirectional module<a class="headerlink" href="#module-models.lstm_stacked_bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.lstm_stacked_bidirectional.LstmStackedBidirectional">
+<em class="property">class </em><code class="descclassname">models.lstm_stacked_bidirectional.</code><code class="descname">LstmStackedBidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_stacked_bidirectional.LstmStackedBidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.stacked_bidirectional.StackedBidirectional" title="models.stacked_bidirectional.StackedBidirectional"><code class="xref py py-class docutils literal"><span class="pre">models.stacked_bidirectional.StackedBidirectional</span></code></a></p>
+<dl class="method">
+<dt id="models.lstm_stacked_bidirectional.LstmStackedBidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_stacked_bidirectional.LstmStackedBidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.lstm_stacked_simple">
+<span id="models-lstm-stacked-simple-module"></span><h2>models.lstm_stacked_simple module<a class="headerlink" href="#module-models.lstm_stacked_simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.lstm_stacked_simple.LstmStackedSimple">
+<em class="property">class </em><code class="descclassname">models.lstm_stacked_simple.</code><code class="descname">LstmStackedSimple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_stacked_simple.LstmStackedSimple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.stacked_simple.StackedSimple" title="models.stacked_simple.StackedSimple"><code class="xref py py-class docutils literal"><span class="pre">models.stacked_simple.StackedSimple</span></code></a></p>
+<dl class="method">
+<dt id="models.lstm_stacked_simple.LstmStackedSimple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.lstm_stacked_simple.LstmStackedSimple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the atomic RNN cell type used for this model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The atomic RNN Cell</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.sequenceNet">
+<span id="models-sequencenet-module"></span><h2>models.sequenceNet module<a class="headerlink" href="#module-models.sequenceNet" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.sequenceNet.NeuralNet">
+<em class="property">class </em><code class="descclassname">models.sequenceNet.</code><code class="descname">NeuralNet</code><a class="headerlink" href="#models.sequenceNet.NeuralNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="models.sequenceNet.NeuralNet.begin_session">
+<code class="descname">begin_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.sequenceNet.NeuralNet.begin_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Begins the session</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.sequenceNet.NeuralNet.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.sequenceNet.NeuralNet.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="models.sequenceNet.NeuralNet.form_model_graph">
+<code class="descname">form_model_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.sequenceNet.NeuralNet.form_model_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the data graph, loads the model and optimizer and then starts the session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.sequenceNet.NeuralNet.set_parameters">
+<code class="descname">set_parameters</code><span class="sig-paren">(</span><em>train_batch_size</em>, <em>test_batch_size</em>, <em>memory_dim</em>, <em>learning_rate</em><span class="sig-paren">)</span><a class="headerlink" href="#models.sequenceNet.NeuralNet.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters for the model and training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>train_batch_size</strong> &#8211; The batch size of examples used for batch training</li>
+<li><strong>test_batch_size</strong> &#8211; The batch size of test examples used for testing</li>
+<li><strong>memory_dim</strong> &#8211; The length of the hidden vector produced by the encoder</li>
+<li><strong>learning_rate</strong> &#8211; The learning rate for Stochastic Gradient Descent</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.sequenceNet.NeuralNet.store_test_predictions">
+<code class="descname">store_test_predictions</code><span class="sig-paren">(</span><em>prediction_id='_final'</em><span class="sig-paren">)</span><a class="headerlink" href="#models.sequenceNet.NeuralNet.store_test_predictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the test predictions in a CSV file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prediction_id</strong> &#8211; A simple id appended to the name of the summary for uniqueness</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.simple">
+<span id="models-simple-module"></span><h2>models.simple module<a class="headerlink" href="#module-models.simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.simple.Simple">
+<em class="property">class </em><code class="descclassname">models.simple.</code><code class="descname">Simple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.simple.Simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.sequenceNet.NeuralNet" title="models.sequenceNet.NeuralNet"><code class="xref py py-class docutils literal"><span class="pre">models.sequenceNet.NeuralNet</span></code></a></p>
+<dl class="method">
+<dt id="models.simple.Simple.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.simple.Simple.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model with the training data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.simple.Simple.generate_one_summary">
+<code class="descname">generate_one_summary</code><span class="sig-paren">(</span><em>review</em><span class="sig-paren">)</span><a class="headerlink" href="#models.simple.Simple.generate_one_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create summary for one review using Encoder Decoder Seq2Seq model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>review</strong> &#8211; The input review</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Output Summary of the model</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.simple.Simple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.simple.Simple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="models.simple.Simple.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.simple.Simple.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test time predictions of summary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.stacked_bidirectional">
+<span id="models-stacked-bidirectional-module"></span><h2>models.stacked_bidirectional module<a class="headerlink" href="#module-models.stacked_bidirectional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.stacked_bidirectional.StackedBidirectional">
+<em class="property">class </em><code class="descclassname">models.stacked_bidirectional.</code><code class="descname">StackedBidirectional</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_bidirectional.StackedBidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.sequenceNet.NeuralNet" title="models.sequenceNet.NeuralNet"><code class="xref py py-class docutils literal"><span class="pre">models.sequenceNet.NeuralNet</span></code></a></p>
+<dl class="method">
+<dt id="models.stacked_bidirectional.StackedBidirectional.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_bidirectional.StackedBidirectional.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model with the training data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_bidirectional.StackedBidirectional.generate_one_summary">
+<code class="descname">generate_one_summary</code><span class="sig-paren">(</span><em>review_fwd</em>, <em>review_bwd</em><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_bidirectional.StackedBidirectional.generate_one_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create summary for one review using Encoder Decoder Seq2Seq model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>review_fwd</strong> &#8211; The input review for forward direction model</li>
+<li><strong>review_bwd</strong> &#8211; The input review for backward direction model</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Output Summary of the model</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_bidirectional.StackedBidirectional.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_bidirectional.StackedBidirectional.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_bidirectional.StackedBidirectional.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_bidirectional.StackedBidirectional.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test time predictions of summary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models.stacked_simple">
+<span id="models-stacked-simple-module"></span><h2>models.stacked_simple module<a class="headerlink" href="#module-models.stacked_simple" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="models.stacked_simple.StackedSimple">
+<em class="property">class </em><code class="descclassname">models.stacked_simple.</code><code class="descname">StackedSimple</code><span class="sig-paren">(</span><em>review_summary_file</em>, <em>checkpointer</em>, <em>num_layers</em>, <em>attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_simple.StackedSimple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.sequenceNet.NeuralNet" title="models.sequenceNet.NeuralNet"><code class="xref py py-class docutils literal"><span class="pre">models.sequenceNet.NeuralNet</span></code></a></p>
+<dl class="method">
+<dt id="models.stacked_simple.StackedSimple.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_simple.StackedSimple.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model with the training data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_simple.StackedSimple.generate_one_summary">
+<code class="descname">generate_one_summary</code><span class="sig-paren">(</span><em>review</em><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_simple.StackedSimple.generate_one_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create summary for one review using Encoder Decoder Seq2Seq model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>review</strong> &#8211; The input review</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Output Summary of the model</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_simple.StackedSimple.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_simple.StackedSimple.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="models.stacked_simple.StackedSimple.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.stacked_simple.StackedSimple.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test time predictions of summary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-models">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-models" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">models package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-models.bidirectional">models.bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.gru_bidirectional">models.gru_bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.gru_simple">models.gru_simple module</a></li>
+<li><a class="reference internal" href="#module-models.gru_stacked_bidirectional">models.gru_stacked_bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.gru_stacked_simple">models.gru_stacked_simple module</a></li>
+<li><a class="reference internal" href="#module-models.lstm_bidirectional">models.lstm_bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.lstm_simple">models.lstm_simple module</a></li>
+<li><a class="reference internal" href="#module-models.lstm_stacked_bidirectional">models.lstm_stacked_bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.lstm_stacked_simple">models.lstm_stacked_simple module</a></li>
+<li><a class="reference internal" href="#module-models.sequenceNet">models.sequenceNet module</a></li>
+<li><a class="reference internal" href="#module-models.simple">models.simple module</a></li>
+<li><a class="reference internal" href="#module-models.stacked_bidirectional">models.stacked_bidirectional module</a></li>
+<li><a class="reference internal" href="#module-models.stacked_simple">models.stacked_simple module</a></li>
+<li><a class="reference internal" href="#module-models">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/models.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Harshal Priyadarshi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/models.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

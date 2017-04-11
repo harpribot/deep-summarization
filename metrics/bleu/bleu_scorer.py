@@ -7,7 +7,7 @@
 # reserved. Do not redistribute without permission from the
 # author. Not for commercial use.
 
-# Modified by: 
+# Modified by:
 # Hao Fang <hfang@uw.edu>
 # Tsung-Yi Lin <tl483@cornell.edu>
 
@@ -26,6 +26,7 @@ def precook(s, n=4, out=False):
     Takes a string as input and returns an object that can be given to
     either cook_refs or cook_test. This is optional: cook_refs and cook_test
     can take string arguments as well.
+
     :param s:
     :param n:
     :param out:
@@ -45,6 +46,7 @@ def cook_refs(refs, eff=None, n=4):
     Takes a list of reference sentences for a single segment
     and returns an object that encapsulates everything that BLEU
     needs to know about them.
+
     :param refs:
     :param eff:
     :param n:
@@ -71,6 +73,7 @@ def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
     """
     Takes a test sentence and returns an object that
     encapsulates everything that BLEU needs to know about it.
+
     :param test:
     :param eff:
     :param n:
@@ -81,7 +84,7 @@ def cook_test(test, (reflen, refmaxcounts), eff=None, n=4):
     result = {}
 
     # Calculate effective reference sentence length.
-    
+
     if eff == "closest":
         result["reflen"] = min((abs(l-testlen), l) for l in reflen)[1]
     else:
@@ -119,6 +122,7 @@ class BleuScorer(object):
     def __init__(self, test=None, refs=None, n=4, special_reflen=None):
         """
         singular instance
+
         :param test:
         :param refs:
         :param n:
@@ -133,6 +137,7 @@ class BleuScorer(object):
     def cook_append(self, test, refs):
         """
         called by constructor and __iadd__ to avoid creating new instances.
+
         :param test:
         :param refs:
         :return:
@@ -159,6 +164,7 @@ class BleuScorer(object):
     def score_ratio(self, option=None):
         """
         return (bleu, len_ratio) pair
+
         :param option:
         :return:
         """
@@ -188,7 +194,7 @@ class BleuScorer(object):
         :return:
         """
         self.compute_score(option=option)
-        return self._testlen        
+        return self._testlen
 
     def retest(self, new_test):
         """
@@ -209,6 +215,7 @@ class BleuScorer(object):
     def rescore(self, new_test):
         """
         replace test(s) with new test(s), and returns the new score.
+
         :param new_test:
         :return:
         """
@@ -225,6 +232,7 @@ class BleuScorer(object):
     def __iadd__(self, other):
         """
         add an instance (e.g., from another sentence).
+        
         :param other:
         :return:
         """
@@ -238,7 +246,7 @@ class BleuScorer(object):
             self.crefs.extend(other.crefs)
             self._score = None ## need to recompute
 
-        return self        
+        return self
 
     def compatible(self, other):
         """
@@ -284,7 +292,7 @@ class BleuScorer(object):
         """
         self._score = None
         return self.compute_score(option, verbose)
-        
+
     def compute_score(self, option=None, verbose=0):
         """
 
@@ -308,7 +316,7 @@ class BleuScorer(object):
         totalcomps = {'testlen':0, 'reflen':0, 'guess':[0]*n, 'correct':[0]*n}
 
         # for each sentence
-        for comps in self.ctest:            
+        for comps in self.ctest:
             testlen = comps['testlen']
             self._testlen += testlen
 
@@ -318,7 +326,7 @@ class BleuScorer(object):
                 reflen = self.special_reflen
 
             self._reflen += reflen
-                
+
             for key in ['guess','correct']:
                 for k in xrange(n):
                     totalcomps[key][k] += comps[key][k]
@@ -327,7 +335,7 @@ class BleuScorer(object):
             bleu = 1.
             for k in xrange(n):
                 bleu *= (float(comps['correct'][k]) + tiny) \
-                        /(float(comps['guess'][k]) + small) 
+                        /(float(comps['guess'][k]) + small)
                 bleu_list[k].append(bleu ** (1./(k+1)))
             ratio = (testlen + tiny) / (reflen + small)  # N.B.: avoid zero division
             if ratio < 1:

@@ -17,6 +17,7 @@ class GruStackedSimple(StackedSimple):
     def get_cell(self):
         """
         Return the atomic RNN cell type used for this model
+        
         :return: The atomic RNN Cell
         """
         return tf.nn.rnn_cell.GRUCell(self.memory_dim)

@@ -11,6 +11,7 @@ class StackedBidirectional(NeuralNet):
     def __init__(self, review_summary_file, checkpointer, num_layers, attention=False):
         """
         A  Stacked Bidirectional ([Forward + Backward direction], Many Layers) Seq2Seq Encoder-Decoder model
+
         :param review_summary_file: The file containing the (food review, target tip summary) pair in CSV format
         :param checkpointer: The checkpoint handling object [Object]
         :param num_layers: Number of stack layers
@@ -58,6 +59,7 @@ class StackedBidirectional(NeuralNet):
         divide the data into training and testing data
         Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst
         Note that only the reviews are changed, and not the summary.
+
         :return: None
         """
         num_samples = self.Y.shape[0]
@@ -95,6 +97,7 @@ class StackedBidirectional(NeuralNet):
     def _load_data(self):
         """
         Load data only if the present data is not checkpointed, else, just load the checkpointed data
+
         :return: None
         """
         self.mapper = Mapper()
@@ -112,6 +115,7 @@ class StackedBidirectional(NeuralNet):
         """
         Loads the data graph consisting of the encoder and decoder input placeholders, Label (Target tip summary)
         placeholders and the weights of the hidden layer of the Seq2Seq model.
+
         :return: None
         """
         # input
@@ -135,6 +139,7 @@ class StackedBidirectional(NeuralNet):
     def _load_model(self):
         """
         Creates the encoder decoder model
+
         :return: None
         """
         # Initial memory value for recurrence.
@@ -195,6 +200,7 @@ class StackedBidirectional(NeuralNet):
     def _load_optimizer(self):
         """
         Load the SGD optimizer
+
         :return: None
         """
         # loss function
@@ -217,6 +223,7 @@ class StackedBidirectional(NeuralNet):
     def fit(self):
         """
         Train the model with the training data
+
         :return: None
         """
         # Iterate and train.
@@ -263,6 +270,7 @@ class StackedBidirectional(NeuralNet):
     def _train_batch(self, review_fwd, review_bwd, summary):
         """
         Train a batch of the data
+
         :param review: The input review data (X) shape[seq_length x batch_length]
         :param summary: The target tip data (Y) shape[seq_length x batch_length]
         :return: None
@@ -288,6 +296,7 @@ class StackedBidirectional(NeuralNet):
     def _visual_validate(self, review_fwd, review_bwd, true_summary):
         """
         Validate Result and display them on a sample
+
         :param review: The input review sentence
         :param true_summary: The true summary (target)
         :return: None
@@ -309,6 +318,7 @@ class StackedBidirectional(NeuralNet):
     def generate_one_summary(self, review_fwd, review_bwd):
         """
         Create summary for one review using Encoder Decoder Seq2Seq model
+
         :param review_fwd: The input review for forward direction model
         :param review_bwd: The input review for backward direction model
         :return: Output Summary of the model
@@ -337,6 +347,7 @@ class StackedBidirectional(NeuralNet):
     def predict(self):
         """
         Make test time predictions of summary
+
         :return: None
         """
         self.predicted_test_summary = []
@@ -358,6 +369,7 @@ class StackedBidirectional(NeuralNet):
     def _predict_batch(self, review_fwd, review_bwd):
         """
         Predict test reviews in batches
+        
         :param review_fwd: Input review batch for forward propagation model
         :param review_bwd: Input review batch for backward propagation model
         :return: None

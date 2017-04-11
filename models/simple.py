@@ -13,6 +13,7 @@ class Simple(NeuralNet):
     def __init__(self, review_summary_file, checkpointer, attention=False):
         """
         A Simple (Unidirectional, One Layer) Seq2Seq Encoder-Decoder model
+
         :param review_summary_file: The file containing the (food review, target tip summary) pair in CSV format
         :param checkpointer: The checkpoint handling object [Object]
         :param attention: True, if attention mechanism is to be implemented, else False. Default: False
@@ -57,6 +58,7 @@ class Simple(NeuralNet):
         divide the data into training and testing data
         Create the X_trn, X_tst, for both forward and backward, and Y_trn and Y_tst_fwd
         Note that only the reviews are changed, and not the summary.
+
         :return: None
         """
 
@@ -91,6 +93,7 @@ class Simple(NeuralNet):
     def _load_data(self):
         """
         Load data only if the present data is not checkpointed, else, just load the checkpointed data
+
         :return: None
         """
         self.mapper = Mapper()
@@ -108,6 +111,7 @@ class Simple(NeuralNet):
         """
         Loads the data graph consisting of the encoder and decoder input placeholders, Label (Target tip summary)
         placeholders and the weights of the hidden layer of the Seq2Seq model.
+
         :return: None
         """
         # input
@@ -128,6 +132,7 @@ class Simple(NeuralNet):
     def _load_model(self):
         """
         Creates the encoder decoder model
+
         :return: None
         """
         # Initial memory value for recurrence.
@@ -161,6 +166,7 @@ class Simple(NeuralNet):
     def _load_optimizer(self):
         """
         Load the SGD optimizer
+
         :return: None
         """
         # loss function
@@ -174,6 +180,7 @@ class Simple(NeuralNet):
     def fit(self):
         """
         Train the model with the training data
+
         :return: None
         """
         # Iterate and train.
@@ -218,6 +225,7 @@ class Simple(NeuralNet):
     def _train_batch(self, review, summary):
         """
         Train a batch of the data
+
         :param review: The input review data (X) shape[seq_length x batch_length]
         :param summary: The target tip data (Y) shape[seq_length x batch_length]
         :return: None
@@ -233,6 +241,7 @@ class Simple(NeuralNet):
     def _visual_validate(self, review, true_summary):
         """
         Validate Result and display them on a sample
+
         :param review: The input review sentence
         :param true_summary: The true summary (target)
         :return: None
@@ -254,6 +263,7 @@ class Simple(NeuralNet):
     def generate_one_summary(self, review):
         """
         Create summary for one review using Encoder Decoder Seq2Seq model
+
         :param review: The input review
         :return: Output Summary of the model
         """
@@ -270,6 +280,7 @@ class Simple(NeuralNet):
     def predict(self):
         """
         Make test time predictions of summary
+
         :return: None
         """
         self.predicted_test_summary = []
@@ -290,6 +301,7 @@ class Simple(NeuralNet):
     def _predict_batch(self, review):
         """
         Predict test reviews in batches
+        
         :param review: Input review batch
         :return: None
         """

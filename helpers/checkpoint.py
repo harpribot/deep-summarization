@@ -66,9 +66,9 @@ class Checkpointer:
 
     def get_last_checkpoint(self):
         """
-
         Assumes that the last checpoint has a higher checkpoint id. Checkpoint will be saved in this exact format
         model_<checkpint_id>.ckpt Eg - model_100.ckpt
+
         :return:
         """
         '''
@@ -97,6 +97,7 @@ class Checkpointer:
         """
         Deletes all previous checkpoints that are <num_previous> before the present checkpoint.
         This is done to prevent blowing out of memory due to too many checkpoints
+        
         :param num_previous:
         :return:
         """

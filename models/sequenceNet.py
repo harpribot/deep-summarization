@@ -34,6 +34,7 @@ class NeuralNet(object):
     def set_parameters(self, train_batch_size, test_batch_size, memory_dim, learning_rate):
         """
         Set the parameters for the model and training.
+
         :param train_batch_size: The batch size of examples used for batch training
         :param test_batch_size: The batch size of test examples used for testing
         :param memory_dim: The length of the hidden vector produced by the encoder
@@ -60,6 +61,7 @@ class NeuralNet(object):
         self.seq_length -> The length of the input sequence (Length of input sentence fed to the encoder-decoder model)
         self.vocab_size -> The size of the data vocabulary
         self.momentum -> The momentum parameter in the update rule for SGD
+
         :return: None
         """
         # parameters
@@ -70,6 +72,7 @@ class NeuralNet(object):
     def begin_session(self):
         """
         Begins the session
+
         :return: None
         """
         # start the tensorflow session
@@ -80,6 +83,7 @@ class NeuralNet(object):
     def form_model_graph(self):
         """
         Creates the data graph, loads the model and optimizer and then starts the session.
+
         :return: None
         """
         self._load_data_graph()
@@ -102,6 +106,7 @@ class NeuralNet(object):
     def _start_session(self):
         """
         Starts the Tensorflow Session
+
         :return: None
         """
         self.sess.run(tf.global_variables_initializer())
@@ -123,6 +128,7 @@ class NeuralNet(object):
     def _index2sentence(self, list_):
         """
         Converts the indexed sentence to the actual sentence
+
         :param list_: The list of the index of the words in the output sentence (in order)
         :return: Output Sentence [String]
         """
@@ -137,6 +143,7 @@ class NeuralNet(object):
     def store_test_predictions(self, prediction_id='_final'):
         """
         Stores the test predictions in a CSV file
+        
         :param prediction_id: A simple id appended to the name of the summary for uniqueness
         :return: None
         """

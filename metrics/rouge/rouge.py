@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # File Name : rouge.py
 #
 # Description : Computes ROUGE-L metric as described by Lin and Hovey (2004)
@@ -14,6 +14,7 @@ import pdb
 def my_lcs(string, sub):
     """
     Calculates longest common subsequence for a pair of tokenized strings
+
     :param string : list of str : tokens from a string split using whitespace
     :param sub : list of str : shorter string, also split using whitespace
     :returns: length (list of int): length of the longest common subsequence between the two strings
@@ -46,12 +47,13 @@ class Rouge:
     def calc_score(self, candidate, refs):
         """
         Compute ROUGE-L score given one candidate and references for an image
+
         :param candidate: str : candidate sentence to be evaluated
         :param refs: list of str : COCO reference sentences for the particular image to be evaluated
         :returns score: int (ROUGE-L score for the candidate evaluated against references)
         """
-        assert(len(candidate)==1)	
-        assert(len(refs)>0)         
+        assert(len(candidate)==1)
+        assert(len(refs)>0)
         prec = []
         rec = []
 
@@ -78,8 +80,9 @@ class Rouge:
     def compute_score(self, gts, res):
         """
         Computes Rouge-L score given a set of reference and candidate sentences for the dataset
-        Invoked by evaluate_captions.py 
-        :param hypo_for_image: dict : candidate / test sentences with "image name" key and "tokenized sentences" as values 
+        Invoked by evaluate_captions.py
+        
+        :param hypo_for_image: dict : candidate / test sentences with "image name" key and "tokenized sentences" as values
         :param ref_for_image: dict : reference MS-COCO sentences with "image name" key and "tokenized sentences" as values
         :returns: average_score: float (mean ROUGE-L score computed by averaging scores for all the images)
         """

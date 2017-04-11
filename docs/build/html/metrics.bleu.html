@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>metrics.bleu package &mdash; Deep Summarization 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Deep Summarization 1.0 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="metrics-bleu-package">
+<h1>metrics.bleu package<a class="headerlink" href="#metrics-bleu-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-metrics.bleu.bleu">
+<span id="metrics-bleu-bleu-module"></span><h2>metrics.bleu.bleu module<a class="headerlink" href="#module-metrics.bleu.bleu" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="metrics.bleu.bleu.Bleu">
+<em class="property">class </em><code class="descclassname">metrics.bleu.bleu.</code><code class="descname">Bleu</code><span class="sig-paren">(</span><em>n=4</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu.Bleu" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="metrics.bleu.bleu.Bleu.compute_score">
+<code class="descname">compute_score</code><span class="sig-paren">(</span><em>gts</em>, <em>res</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu.Bleu.compute_score" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gts</strong> &#8211; </li>
+<li><strong>res</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu.Bleu.method">
+<code class="descname">method</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu.Bleu.method" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-metrics.bleu.bleu_scorer">
+<span id="metrics-bleu-bleu-scorer-module"></span><h2>metrics.bleu.bleu_scorer module<a class="headerlink" href="#module-metrics.bleu.bleu_scorer" title="Permalink to this headline">¶</a></h2>
+<p>Provides:
+cook_refs(refs, n=4): Transform a list of reference sentences as strings into a form usable by cook_test().
+cook_test(test, refs, n=4): Transform a test sentence as a string (together with the cooked reference sentences) into a form usable by score_cooked().</p>
+<dl class="class">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer">
+<em class="property">class </em><code class="descclassname">metrics.bleu.bleu_scorer.</code><code class="descname">BleuScorer</code><span class="sig-paren">(</span><em>test=None</em>, <em>refs=None</em>, <em>n=4</em>, <em>special_reflen=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Bleu scorer.</p>
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.compatible">
+<code class="descname">compatible</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.compatible" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.compute_score">
+<code class="descname">compute_score</code><span class="sig-paren">(</span><em>option=None</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.compute_score" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>option</strong> &#8211; </li>
+<li><strong>verbose</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.cook_append">
+<code class="descname">cook_append</code><span class="sig-paren">(</span><em>test</em>, <em>refs</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.cook_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>called by constructor and __iadd__ to avoid creating new instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>test</strong> &#8211; </li>
+<li><strong>refs</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>copy the refs.
+:return:</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.crefs">
+<code class="descname">crefs</code><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.crefs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.ctest">
+<code class="descname">ctest</code><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.ctest" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.n">
+<code class="descname">n</code><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.n" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.ratio">
+<code class="descname">ratio</code><span class="sig-paren">(</span><em>option=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.recompute_score">
+<code class="descname">recompute_score</code><span class="sig-paren">(</span><em>option=None</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.recompute_score" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>option</strong> &#8211; </li>
+<li><strong>verbose</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.reflen">
+<code class="descname">reflen</code><span class="sig-paren">(</span><em>option=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.reflen" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.rescore">
+<code class="descname">rescore</code><span class="sig-paren">(</span><em>new_test</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.rescore" title="Permalink to this definition">¶</a></dt>
+<dd><p>replace test(s) with new test(s), and returns the new score.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_test</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.retest">
+<code class="descname">retest</code><span class="sig-paren">(</span><em>new_test</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.retest" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_test</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.score_ratio">
+<code class="descname">score_ratio</code><span class="sig-paren">(</span><em>option=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.score_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>return (bleu, len_ratio) pair</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.score_ratio_str">
+<code class="descname">score_ratio_str</code><span class="sig-paren">(</span><em>option=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.score_ratio_str" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.single_reflen">
+<code class="descname">single_reflen</code><span class="sig-paren">(</span><em>option='average'</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.single_reflen" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.size" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.special_reflen">
+<code class="descname">special_reflen</code><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.special_reflen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="metrics.bleu.bleu_scorer.BleuScorer.testlen">
+<code class="descname">testlen</code><span class="sig-paren">(</span><em>option=None</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.BleuScorer.testlen" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>option</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="metrics.bleu.bleu_scorer.cook_refs">
+<code class="descclassname">metrics.bleu.bleu_scorer.</code><code class="descname">cook_refs</code><span class="sig-paren">(</span><em>refs</em>, <em>eff=None</em>, <em>n=4</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.cook_refs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a list of reference sentences for a single segment
+and returns an object that encapsulates everything that BLEU
+needs to know about them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>refs</strong> &#8211; </li>
+<li><strong>eff</strong> &#8211; </li>
+<li><strong>n</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="metrics.bleu.bleu_scorer.cook_test">
+<code class="descclassname">metrics.bleu.bleu_scorer.</code><code class="descname">cook_test</code><span class="sig-paren">(</span><em>test</em>, <em>(reflen</em>, <em>refmaxcounts)</em>, <em>eff=None</em>, <em>n=4</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.cook_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a test sentence and returns an object that
+encapsulates everything that BLEU needs to know about it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>test</strong> &#8211; </li>
+<li><strong>eff</strong> &#8211; </li>
+<li><strong>n</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="metrics.bleu.bleu_scorer.precook">
+<code class="descclassname">metrics.bleu.bleu_scorer.</code><code class="descname">precook</code><span class="sig-paren">(</span><em>s</em>, <em>n=4</em>, <em>out=False</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.bleu.bleu_scorer.precook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a string as input and returns an object that can be given to
+either cook_refs or cook_test. This is optional: cook_refs and cook_test
+can take string arguments as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; </li>
+<li><strong>n</strong> &#8211; </li>
+<li><strong>out</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-metrics.bleu">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-metrics.bleu" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">metrics.bleu package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-metrics.bleu.bleu">metrics.bleu.bleu module</a></li>
+<li><a class="reference internal" href="#module-metrics.bleu.bleu_scorer">metrics.bleu.bleu_scorer module</a></li>
+<li><a class="reference internal" href="#module-metrics.bleu">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/metrics.bleu.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Harshal Priyadarshi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/metrics.bleu.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

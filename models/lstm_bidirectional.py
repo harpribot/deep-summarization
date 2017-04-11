@@ -15,6 +15,7 @@ class LstmBidirectional(Bidirectional):
     def get_cell(self):
         """
         Return the atomic RNN cell type used for this model
+        
         :return: The atomic RNN Cell
         """
         return tf.nn.rnn_cell.LSTMCell(self.memory_dim)

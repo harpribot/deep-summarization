@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>metrics.rouge package &mdash; Deep Summarization 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Deep Summarization 1.0 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="metrics-rouge-package">
+<h1>metrics.rouge package<a class="headerlink" href="#metrics-rouge-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-metrics.rouge.rouge">
+<span id="metrics-rouge-rouge-module"></span><h2>metrics.rouge.rouge module<a class="headerlink" href="#module-metrics.rouge.rouge" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="metrics.rouge.rouge.Rouge">
+<em class="property">class </em><code class="descclassname">metrics.rouge.rouge.</code><code class="descname">Rouge</code><a class="headerlink" href="#metrics.rouge.rouge.Rouge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for computing ROUGE-L score for a set of candidate sentences for the MS COCO test set</p>
+<dl class="method">
+<dt id="metrics.rouge.rouge.Rouge.calc_score">
+<code class="descname">calc_score</code><span class="sig-paren">(</span><em>candidate</em>, <em>refs</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.rouge.rouge.Rouge.calc_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute ROUGE-L score given one candidate and references for an image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>candidate</strong> &#8211; str : candidate sentence to be evaluated</li>
+<li><strong>refs</strong> &#8211; list of str : COCO reference sentences for the particular image to be evaluated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns score:</th><td class="field-body"><p class="first last">int (ROUGE-L score for the candidate evaluated against references)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.rouge.rouge.Rouge.compute_score">
+<code class="descname">compute_score</code><span class="sig-paren">(</span><em>gts</em>, <em>res</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.rouge.rouge.Rouge.compute_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes Rouge-L score given a set of reference and candidate sentences for the dataset
+Invoked by evaluate_captions.py</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hypo_for_image</strong> &#8211; dict : candidate / test sentences with &#8220;image name&#8221; key and &#8220;tokenized sentences&#8221; as values</li>
+<li><strong>ref_for_image</strong> &#8211; dict : reference MS-COCO sentences with &#8220;image name&#8221; key and &#8220;tokenized sentences&#8221; as values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">average_score: float (mean ROUGE-L score computed by averaging scores for all the images)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="metrics.rouge.rouge.Rouge.method">
+<code class="descname">method</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metrics.rouge.rouge.Rouge.method" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="metrics.rouge.rouge.my_lcs">
+<code class="descclassname">metrics.rouge.rouge.</code><code class="descname">my_lcs</code><span class="sig-paren">(</span><em>string</em>, <em>sub</em><span class="sig-paren">)</span><a class="headerlink" href="#metrics.rouge.rouge.my_lcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates longest common subsequence for a pair of tokenized strings</p>
+<p>:param string : list of str : tokens from a string split using whitespace
+:param sub : list of str : shorter string, also split using whitespace
+:returns: length (list of int): length of the longest common subsequence between the two strings</p>
+<p>Note: my_lcs only gives length of the longest common subsequence, not the actual LCS</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-metrics.rouge">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-metrics.rouge" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">metrics.rouge package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-metrics.rouge.rouge">metrics.rouge.rouge module</a></li>
+<li><a class="reference internal" href="#module-metrics.rouge">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/metrics.rouge.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Harshal Priyadarshi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/metrics.rouge.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

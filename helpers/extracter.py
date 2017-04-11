@@ -6,6 +6,7 @@ class Spider:
     def __init__(self,num_reviews):
         """
         Simple Spider to crawl the JSON script dataset and load reviews and summary
+
         :param num_reviews: Number of (review, summary) samples to be extracted
         """
         self.num_reviews = num_reviews
@@ -15,6 +16,7 @@ class Spider:
     def crawl_for_reviews_and_summary(self, input_file):
         """
         Crawl the input dataset
+
         :param input_file: The location of the file containing the txt file dataset
         :return: None
         """
@@ -26,6 +28,7 @@ class Spider:
     def __crawl_review(self):
         """
         Crawl review
+
         :return: review [numpy array]
         """
         review_list = []
@@ -45,6 +48,7 @@ class Spider:
     def __crawl_summary(self):
         """
         Crawl summary
+
         :return: summary [numpy array]
         """
         summary_list = []
@@ -64,6 +68,7 @@ class Spider:
     def save_review_summary_frame(self, output_file):
         """
         save (review, summary) pair in CSV file
+        
         :param output_file: The location where CSV file is to be saved.
         :return: None
         """
