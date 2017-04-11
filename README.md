@@ -6,6 +6,7 @@ Uses Recurrent Neural Network (LSTM and GRU units) for developing Seq2Seq Encode
 - [DataSet](#dataset)
 - [Installation Requirements](#installation-requirements)
 - [Run Instructions](#run-instructions)
+- [Documentation](#documentation)
 - [References](#references)
 
 ## Encoder Decoder Model
@@ -16,7 +17,7 @@ Uses Recurrent Neural Network (LSTM and GRU units) for developing Seq2Seq Encode
 
 The dataset can be downloaded from [here](https://snap.stanford.edu/data/web-FineFoods.html)
 
-A sample dataset example looks like this - 
+A sample dataset example looks like this -
 ```
 product/productId: B001E4KFG0
 review/userId: A3SGXH7AUHU8GW
@@ -61,10 +62,10 @@ python train_scripts/train_script_gru_simple_no_attn.py
 ```
 This runs the Simple GRU Cell Based (Without Attention Mechanism) Encoder Decoder model.
 
-3) Once the above script has completed execution run one of the following scripts in whichever order desired. 
+3) Once the above script has completed execution run one of the following scripts in whichever order desired.
 
 - For Models without Attention Mechanism
-    
+
 ```
 # Simple - No Attention
 python train_scripts/train_script_lstm_simple_no_attn.py
@@ -82,9 +83,9 @@ python train_scripts/train_script_gru_stacked_bidirectional_no_attn.py
 python train_scripts/train_script_lstm_stacked_bidirectional_no_attention.py
 
 ```
-    
+
 - For Models with Attention Mechanism
- 
+
 ```
 # Simple - Attention
 python train_scripts/train_script_gru_simple_attn.py
@@ -102,16 +103,23 @@ python train_scripts/train_script_lstm_bidirectional_attn.py
 python train_scripts/train_script_gru_stacked_bidirectional_attn.py
 python train_scripts/train_script_lstm_stacked_bidirectional_attention.py
 ```
-    
+
 4) Finally exit the virtual environment once you have completed the project. You can reactivate the env later.
 ```
 deactivate
 ```
 
+## Documentation
+The documentation was created automatically, and thus can be error prone. Please report any in the issue table. Some methods have missing documentation. This is not an error, but laziness on my part. I will add those documentations, when I get some free time.
+
+To access documentation, just open index.html located at
+```
+docs/build/html/index.html
+```
+on your favorite browser. You can open them locally for now. I will try hosting them on Github pages once i get time. 
 ## References
 1) J. McAuley and J. Leskovec. From amateurs to connoisseurs: modeling the evolution of user expertise through online reviews. WWW, 2013.
 
 2) Sutskever, Ilya, Oriol Vinyals, and Quoc V. Le. "Sequence to sequence learning with neural networks." Advances in neural information processing systems. 2014.
 
 3) Cho, Kyunghyun, et al. "Learning phrase representations using RNN encoder-decoder for statistical machine translation." arXiv preprint arXiv:1406.1078 (2014).
-
